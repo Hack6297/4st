@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>4 Studios Start Menu</title>
+  <link rel="preload" href="./fonts/SegoeUI-Light.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="./fonts/SegoeUI-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="./fonts/SegoeUI-Bold.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="preload" href="./fonts/HelveticaNeue-Regular.ttf" as="font" type="font/ttf" crossorigin>
+  <link rel="stylesheet" href="https://unpkg.com/7.css/dist/7.scoped.css">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body data-wallpaper="./imageres/home_page_bg.jpg">
+  <main class="start-menu">
+    <header class="start-menu__bar">
+      <img src="./imageres/dark_aero_bar.svg" alt="" class="start-menu__bar-image" aria-hidden="true">
+      <div class="brand-lockup">
+        <img src="./4studios.svg" alt="4 Studios logo" class="brand-lockup__logo">
+        <div class="brand-lockup__text">
+          <p class="brand-lockup__small">4 Studios</p>
+          <h1>Start</h1>
+        </div>
+      </div>
+    </header>
+
+    <section class="tiles-stage">
+      <div class="tiles-stage__fade tiles-stage__fade--left" aria-hidden="true"></div>
+      <div class="tiles-stage__fade tiles-stage__fade--right" aria-hidden="true"></div>
+
+      <div class="tiles-scroller" id="tiles-scroller" aria-label="Scrolling start menu">
+        <section class="tile-group tile-group--games">
+          <h2 class="tile-group__title">Games</h2>
+          <div class="tile-group__grid tile-group__grid--category" data-grid-id="games">
+            <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://mcne1.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="mcne1">
+              <img src="./icons/mcne1.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">mcne1.onrender.com</span>
+            </a>
+            <a class="start-tile tile-color-aqua" href="https://mcne2.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="mcne2">
+              <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">mcne2.onrender.com</span>
+            </a>
+            <a class="start-tile start-tile--wide tile-color-sky" href="https://fne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="fne">
+              <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">fne.onrender.com</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="tile-group tile-group--apps">
+          <h2 class="tile-group__title">Apps</h2>
+          <div class="tile-group__grid tile-group__grid--category" data-grid-id="apps">
+            <a class="start-tile start-tile--wide tile-color-aqua" href="https://webcraft-server.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-webcraft">
+              <img src="./icons/webcraft-server.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Webcraft Server</span>
+            </a>
+            <a class="start-tile tile-color-light-aqua" href="https://polyblocks.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-polyblocks">
+              <img src="./icons/polyblocks.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Polyblocks</span>
+            </a>
+            <a class="start-tile start-tile--wide tile-color-sky" href="https://nesa98.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-nesa98">
+              <img src="./icons/nesa98.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Nesa 98</span>
+            </a>
+            <a class="start-tile tile-color-sky" href="https://nesat.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-nesat">
+              <img src="./icons/nesat.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">NesaT Search Engine</span>
+            </a>
+            <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://mcne1.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-mcne1">
+              <img src="./icons/mcne1.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">MCNE 1</span>
+            </a>
+            <a class="start-tile tile-color-aqua" href="https://mcne2.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-mcne2">
+              <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">MCNE 2</span>
+            </a>
+            <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://fne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-fne">
+              <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">FNE</span>
+            </a>
+          </div>
+        </section>
+
+        <section class="tile-group tile-group--news">
+          <h2 class="tile-group__title">News</h2>
+          <div class="tile-group__grid tile-group__grid--news" id="news-feed" data-grid-id="news">
+            <article class="start-tile start-tile--large tile-color-light-aqua start-tile--news start-tile--loading" data-tile="large">
+              <span class="start-tile__eyebrow">Loading</span>
+              <span class="start-tile__title">Fetching live headlines...</span>
+            </article>
+            <article class="start-tile start-tile--large tile-color-aqua start-tile--news start-tile--loading" data-tile="large">
+              <span class="start-tile__eyebrow">Loading</span>
+              <span class="start-tile__title">BBC</span>
+            </article>
+            <article class="start-tile start-tile--large tile-color-sky start-tile--news start-tile--loading" data-tile="large">
+              <span class="start-tile__eyebrow">Loading</span>
+              <span class="start-tile__title">MSN</span>
+            </article>
+            <article class="start-tile start-tile--large tile-color-aqua start-tile--news start-tile--loading" data-tile="large">
+              <span class="start-tile__eyebrow">Loading</span>
+              <span class="start-tile__title">More sources</span>
+            </article>
+          </div>
+        </section>
+
+        <section class="tile-group">
+          <h2 class="tile-group__title">More</h2>
+          <div class="tile-group__grid tile-group__grid--category" data-grid-id="more">
+            <a class="start-tile start-tile--wide tile-color-sky" href="https://fne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="more-fne">
+              <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">FNE</span>
+            </a>
+            <a class="start-tile tile-color-aqua" href="https://mcne1.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="more-mcne1">
+              <img src="./icons/mcne1.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">MCNE 1</span>
+            </a>
+            <a class="start-tile tile-color-light-aqua" href="https://mcne2.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="more-mcne2">
+              <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">MCNE 2</span>
+            </a>
+            <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://webcraft-server.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="more-webcraft">
+              <img src="./icons/webcraft-server.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Open Webcraft</span>
+            </a>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section class="customize-dock" aria-label="Customize start menu">
+      <button class="customize-trigger start-button" id="customize-trigger" type="button" aria-expanded="false" aria-controls="customize-panel">
+        
+      </button>
+      <div class="customize-panel" id="customize-panel" hidden>
+        <p class="customize-panel__title">Customize Start</p>
+        <div class="win7 customize-panel__win7">
+          <label class="customize-panel__label" for="wallpaper-select">Choose the wallpaper</label>
+          <select class="customize-panel__select" id="wallpaper-select">
+            <option value="./imageres/home_page_bg.jpg">Default wallpaper</option>
+          </select>
+        </div>
+        <div class="customize-panel__browser">
+          <button class="start-button" type="button" id="wallpaper-browser-toggle" aria-expanded="false" aria-controls="wallpaper-explorer">
+            Browse AeroVistaX
+          </button>
+        </div>
+        <p class="customize-panel__label">Selected tile</p>
+        <p class="customize-panel__selection" id="selected-tile-label">Click a tile to edit it</p>
+        <div class="customize-panel__row">
+          <button class="start-button" type="button" data-size="small">Small</button>
+          <button class="start-button" type="button" data-size="wide">Wide</button>
+          <button class="start-button" type="button" data-size="large">Large</button>
+        </div>
+        <p class="customize-panel__hint">Drag and drop tiles to move them.</p>
+      </div>
+    </section>
+
+    <section class="wallpaper-explorer-modal" id="wallpaper-explorer" hidden aria-label="AeroVistaX wallpaper explorer">
+      <div class="wallpaper-explorer-window">
+        <div class="wallpaper-explorer-titlebar">
+          <p class="wallpaper-explorer-title">AeroVistaX Wallpapers</p>
+          <button class="start-button wallpaper-explorer-close" type="button" id="wallpaper-explorer-close">Close</button>
+        </div>
+        <div class="wallpaper-explorer-toolbar">
+          <p class="wallpaper-explorer-subtitle">Choose a wallpaper and the explorer will close automatically.</p>
+          <p class="wallpaper-explorer-current" id="wallpaper-browser-name">Choose one</p>
+        </div>
+        <div class="wallpaper-explorer-grid" id="wallpaper-explorer-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="./script.js"></script>
+</body>
+</html>
