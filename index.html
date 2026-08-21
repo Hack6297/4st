@@ -22,6 +22,9 @@
           <h1>Start</h1>
         </div>
       </div>
+      <button class="customize-trigger customize-trigger--bar start-button" id="customize-trigger" type="button" aria-expanded="false" aria-controls="customize-panel">
+        Customize
+      </button>
     </header>
 
     <section class="tiles-stage">
@@ -29,6 +32,20 @@
       <div class="tiles-stage__fade tiles-stage__fade--right" aria-hidden="true"></div>
 
       <div class="tiles-scroller" id="tiles-scroller" aria-label="Scrolling start menu">
+        <section class="tile-group tile-group--studio-news" aria-label="4 Studios News">
+          <h2 class="tile-group__title" aria-hidden="true">&nbsp;</h2>
+          <div class="tile-group__grid tile-group__grid--studio-news">
+            <article class="start-tile start-tile--large start-tile--studio-news" data-tile="large">
+              <div class="studio-news__content">
+                <strong class="studio-news__heading">4 Studios News</strong>
+                <span class="studio-news__subtext" data-studio-news-slide>A new Game Engine Is coming out called FunnyNetworkEngine, an Engine where you can create your own Games, Comics, and more. This Website is still in Alpha, and it's available in early access!</span>
+                <span class="studio-news__subtext" data-studio-news-slide hidden>Have you ever wanted an easy website maker, with easy interface? Try out NetSite! A website builder, now in early access! Stack blocks, and make something cool, right now!</span>
+                <span class="studio-news__subtext" data-studio-news-slide hidden>Online Desktop with saphhire design! Save your files, folders, and painting app! Free storage easy to keep your files, trying out? Try Guest Mode! Warning: May Contain Unfinished work!</span>
+              </div>
+            </article>
+          </div>
+        </section>
+
         <section class="tile-group tile-group--games">
           <h2 class="tile-group__title">Games</h2>
           <div class="tile-group__grid tile-group__grid--category" data-grid-id="games">
@@ -36,13 +53,9 @@
               <img src="./icons/mcne1.png" alt="" class="start-tile__app-icon">
               <span class="start-tile__title">mcne1.onrender.com</span>
             </a>
-            <a class="start-tile tile-color-aqua" href="https://mcne2.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="mcne2">
+            <a class="start-tile start-tile--wide tile-color-aqua" href="https://mcne2.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="mcne2">
               <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
               <span class="start-tile__title">mcne2.onrender.com</span>
-            </a>
-            <a class="start-tile tile-color-aqua" href="https://mcne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="mcne2">
-              <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
-              <span class="start-tile__title">Minecraft Nesa Edtion</span>
             </a>
             <a class="start-tile start-tile--wide tile-color-sky" href="https://fne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="fne">
               <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
@@ -54,21 +67,17 @@
         <section class="tile-group tile-group--apps">
           <h2 class="tile-group__title">Apps</h2>
           <div class="tile-group__grid tile-group__grid--category" data-grid-id="apps">
-            <a class="start-tile start-tile--wide tile-color-aqua" href="https://webcraft-server.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-webcraft">
-              <img src="./icons/webcraft-server.png" alt="" class="start-tile__app-icon">
-              <span class="start-tile__title">Webcraft Server</span>
+            <a class="start-tile start-tile--wide tile-color-aqua" href="https://netsite.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-netsite">
+              <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">NetSite</span>
             </a>
             <a class="start-tile tile-color-light-aqua" href="https://polyblocks.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-polyblocks">
               <img src="./icons/polyblocks.png" alt="" class="start-tile__app-icon">
               <span class="start-tile__title">Polyblocks</span>
             </a>
             <a class="start-tile tile-color-light-aqua" href="https://gai-twrh.onrender.com/" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-ai">
-              <img src="./icons/webcraft_server.png" alt="" class="start-tile__app-icon">
+              <img src="./icons/ai.png" alt="" class="start-tile__app-icon">
               <span class="start-tile__title">GabeAI</span>
-            </a>
-            <a class="start-tile tile-color-aqua" href="https://mcne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="mcne2">
-              <img src="./icons/mcne2.png" alt="" class="start-tile__app-icon">
-              <span class="start-tile__title">Minecraft Nesa Edtion</span>
             </a>
             <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://mcne1.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-mcne1">
               <img src="./icons/mcne1.png" alt="" class="start-tile__app-icon">
@@ -81,6 +90,18 @@
             <a class="start-tile start-tile--wide tile-color-light-aqua" href="https://fne.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-fne">
               <img src="./icons/fne.png" alt="" class="start-tile__app-icon">
               <span class="start-tile__title">FNE</span>
+            </a>
+            <a class="start-tile tile-color-light-aqua" href="https://nesa98.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-nesa98">
+              <img src="./icons/nesa98.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Nesa 98</span>
+            </a>
+            <a class="start-tile tile-color-light-aqua" href="https://aeroos.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="wide" data-tile-id="app-aeroos">
+              <img src="./icons/desktop.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">Desktop</span>
+            </a>
+            <a class="start-tile tile-color-aqua" href="https://nesat.onrender.com" target="_blank" rel="noreferrer noopener" data-tile="small" data-tile-id="app-nesat">
+              <img src="./icons/nesat.png" alt="" class="start-tile__app-icon">
+              <span class="start-tile__title">NesaT</span>
             </a>
           </div>
         </section>
@@ -132,9 +153,6 @@
     </section>
 
     <section class="customize-dock" aria-label="Customize start menu">
-      <button class="customize-trigger start-button" id="customize-trigger" type="button" aria-expanded="false" aria-controls="customize-panel">
-        
-      </button>
       <div class="customize-panel" id="customize-panel" hidden>
         <p class="customize-panel__title">Customize Start</p>
         <div class="win7 customize-panel__win7">

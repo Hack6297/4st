@@ -14,6 +14,7 @@
   const wallpaperExplorerGrid = document.getElementById("wallpaper-explorer-grid");
   const wallpaperBrowserName = document.getElementById("wallpaper-browser-name");
   const selectedTileLabel = document.getElementById("selected-tile-label");
+  const studioNewsSlides = Array.from(document.querySelectorAll("[data-studio-news-slide]"));
   let selectedTile = null;
   let customizeOpen = false;
   let wallpaperExplorerOpen = false;
@@ -33,6 +34,15 @@
   applySavedTileState();
   attachTileSurfaces(document);
   enableTileDragging(document);
+
+  if (studioNewsSlides.length) {
+    let studioNewsSlideIndex = 0;
+    window.setInterval(function () {
+      studioNewsSlides[studioNewsSlideIndex].hidden = true;
+      studioNewsSlideIndex = (studioNewsSlideIndex + 1) % studioNewsSlides.length;
+      studioNewsSlides[studioNewsSlideIndex].hidden = false;
+    }, 20000);
+  }
 
   scroller.addEventListener("wheel", function (event) {
     if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) {
@@ -113,14 +123,41 @@
         throw new Error("Wallpaper request failed");
       }
       const data = await response.json();
-      populateWallpaperSelect(data.items || []);
+      populateWallpaperSelect(data.items && data.items.length ? data.items : buildBundledWallpaperItems());
     } catch (error) {
-      populateWallpaperSelect([]);
+      populateWallpaperSelect(buildBundledWallpaperItems());
     }
+  }
+
+  function buildBundledWallpaperItems() {
+    const names = [];
+    const addNumbered = function (prefix, count) {
+      for (let number = 1; number <= count; number += 1) {
+        names.push(prefix + number + ".jpg");
+      }
+    };
+
+    names.push("null0.jpg");
+    addNumbered("beta", 10);
+    names.push("beta3 — копия.jpg");
+    addNumbered("example", 5);
+    addNumbered("Extra", 2);
+    addNumbered("Final", 14);
+    names.push("Final2 — копия.jpg", "Final9 — копия.jpg", "Instal1.jpg");
+    addNumbered("Starter", 28);
+    addNumbered("Unreleased", 13);
+
+    return names.map(function (name) {
+      return {
+        name: name,
+        path: "/AeroVistaX%20Wallpapers/" + encodeURIComponent(name)
+      };
+    });
   }
 
   function populateWallpaperSelect(items) {
     const currentValue = localStorage.getItem(STORAGE_KEYS.wallpaper) || document.body.getAttribute("data-wallpaper");
+    wallpaperSelect.innerHTML = '<option value="./imageres/home_page_bg.jpg">Default wallpaper</option>';
     wallpaperItems = [{ name: "Default wallpaper", value: "./imageres/home_page_bg.jpg" }];
     wallpaperLibraryItems = [];
     items.forEach(function (item) {
