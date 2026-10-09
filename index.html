@@ -15,6 +15,10 @@
   <main class="start-menu">
     <header class="start-menu__bar">
       <img src="./imageres/dark_aero_bar.svg" alt="" class="start-menu__bar-image" aria-hidden="true">
+      <nav class="start-menu__nav" aria-label="Main menu">
+        <button class="start-menu__nav-button is-active" id="nav-home" type="button" aria-current="page">Home</button>
+        <button class="start-menu__nav-button" id="nav-built-in" type="button">Built-in Apps</button>
+      </nav>
       <div class="brand-lockup">
         <img src="./4studios.svg" alt="4 Studios logo" class="brand-lockup__logo">
         <div class="brand-lockup__text">
@@ -27,7 +31,7 @@
       </button>
     </header>
 
-    <section class="tiles-stage">
+    <section class="tiles-stage" id="home-stage">
       <div class="tiles-stage__fade tiles-stage__fade--left" aria-hidden="true"></div>
       <div class="tiles-stage__fade tiles-stage__fade--right" aria-hidden="true"></div>
 
@@ -149,6 +153,16 @@
             </a>
           </div>
         </section>
+      </div>
+    </section>
+
+    <section class="built-in-stage" id="built-in-stage" aria-label="Built-in Apps" hidden>
+      <h2 class="tile-group__title">Built-in Apps</h2>
+      <div class="tile-group__grid">
+        <a class="start-tile start-tile--large tile-color-sky" href="./Built-in%20apps/Joseph's%20Fun%20schoolhouse/Josephs_Basics.html" target="_blank" rel="noopener" aria-label="Open Joseph's Basics">
+          <img src="./icons/joseph-basics.png" alt="" class="start-tile__app-icon built-in-app-icon">
+          <span class="start-tile__title">Joseph's Basics</span>
+        </a>
       </div>
     </section>
 

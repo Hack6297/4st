@@ -7,6 +7,11 @@
   const newsFeed = document.getElementById("news-feed");
   const customizeTrigger = document.getElementById("customize-trigger");
   const customizePanel = document.getElementById("customize-panel");
+  const homeStage = document.getElementById("home-stage");
+  const builtInStage = document.getElementById("built-in-stage");
+  const homeNav = document.getElementById("nav-home");
+  const builtInNav = document.getElementById("nav-built-in");
+  const customizeDock = document.querySelector(".customize-dock");
   const wallpaperSelect = document.getElementById("wallpaper-select");
   const wallpaperBrowserToggle = document.getElementById("wallpaper-browser-toggle");
   const wallpaperExplorer = document.getElementById("wallpaper-explorer");
@@ -34,6 +39,33 @@
   applySavedTileState();
   attachTileSurfaces(document);
   enableTileDragging(document);
+
+  function showSection(section) {
+    const builtIn = section === "built-in";
+    homeStage.hidden = builtIn;
+    builtInStage.hidden = !builtIn;
+    document.body.classList.toggle("is-built-in", builtIn);
+    customizeTrigger.hidden = builtIn;
+    customizeDock.hidden = builtIn;
+    homeNav.classList.toggle("is-active", !builtIn);
+    builtInNav.classList.toggle("is-active", builtIn);
+    if (builtIn) {
+      homeNav.removeAttribute("aria-current");
+      builtInNav.setAttribute("aria-current", "page");
+      customizeOpen = false;
+      customizePanel.hidden = true;
+      customizeTrigger.classList.remove("is-active");
+      customizeTrigger.setAttribute("aria-expanded", "false");
+      clearSelectedTile();
+      closeWallpaperExplorer();
+    } else {
+      builtInNav.removeAttribute("aria-current");
+      homeNav.setAttribute("aria-current", "page");
+    }
+  }
+
+  homeNav.addEventListener("click", function () { showSection("home"); });
+  builtInNav.addEventListener("click", function () { showSection("built-in"); });
 
   if (studioNewsSlides.length) {
     let studioNewsSlideIndex = 0;
