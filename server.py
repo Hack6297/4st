@@ -2,6 +2,8 @@ import asyncio
 import json
 import os
 import re
+import subprocess
+import sys
 import time
 import urllib.parse
 import urllib.request
@@ -9,7 +11,15 @@ import uuid
 import xml.etree.ElementTree as ET
 from email.utils import parsedate_to_datetime
 
-from aiohttp import WSMsgType, web
+try:
+    from aiohttp import WSMsgType, web
+except ModuleNotFoundError as error:
+    if error.name != "aiohttp":
+        raise
+    # Existing manually configured Render services may still have the old empty
+    # build command, so install the declared dependency before starting.
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "-r", os.path.join(os.path.dirname(__file__), "requirements.txt")])
+    from aiohttp import WSMsgType, web
 
 PORT = int(os.environ.get("PORT", "4173"))
 HOST = os.environ.get("HOST", "0.0.0.0")
