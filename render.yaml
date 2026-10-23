@@ -2,6 +2,6 @@ services:
   - type: web
     name: 4-studios-start-menu
     runtime: python
-    buildCommand: ""
+    buildCommand: pip install -r requirements.txt
     startCommand: python server.py
     plan: free
