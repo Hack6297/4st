@@ -30,8 +30,12 @@ ROOM = {"started": False, "paused": False, "floor": 1, "round": 1, "notebooks": 
 FEEDS = [{"source": "BBC", "url": "https://feeds.bbci.co.uk/news/rss.xml"}]
 
 
+def public_player(player):
+    return {key: value for key, value in player.items() if key != "ws" and not key.startswith("_")}
+
+
 def public_players():
-    return [{key: value for key, value in player.items() if key != "ws"} for player in PLAYERS.values()]
+    return [public_player(player) for player in PLAYERS.values()]
 
 
 async def send(player_id, payload):
@@ -94,7 +98,7 @@ async def websocket_handler(request):
             username = f"{base_name[:14]} {suffix}"
             suffix += 1
         player_id = uuid.uuid4().hex[:12]
-        player = {"id": player_id, "username": username, "color": COLORS[len(PLAYERS) % len(COLORS)], "x": 0.0, "y": 0.0, "z": 0.0, "a": 0.0, "floor": ROOM["floor"], "moving": False, "joinedAt": int(time.time()), "ws": websocket}
+        player = {"id": player_id, "username": username, "color": COLORS[len(PLAYERS) % len(COLORS)], "x": 0.0, "y": 0.0, "z": 0.0, "a": 0.0, "floor": ROOM["floor"], "moving": False, "joinedAt": int(time.time()), "_last_chat": 0.0, "ws": websocket}
         PLAYERS[player_id] = player
         await websocket.send_json({"type": "joined", "id": player_id, "username": username, "color": player["color"], "started": ROOM["started"], "floor": ROOM["floor"]})
         await broadcast_roster()
@@ -117,7 +121,14 @@ async def websocket_handler(request):
                 except (TypeError, ValueError):
                     floor = ROOM["floor"]
                 player.update(x=safe_number(message.get("x"), -2000, 2000), y=safe_number(message.get("y"), -2000, 2000), z=safe_number(message.get("z"), 0, 200), a=safe_number(message.get("a"), -1000, 1000), floor=floor, moving=bool(message.get("moving")))
-                await broadcast({"type": "state", **{key: value for key, value in player.items() if key != "ws"}}, exclude=player_id)
+                await broadcast({"type": "state", **public_player(player)}, exclude=player_id)
+            elif kind == "chat":
+                now = time.monotonic()
+                text = re.sub(r"[\x00-\x1f\x7f]", " ", str(message.get("text", "")))
+                text = " ".join(text.split())[:180]
+                if text and now - player["_last_chat"] >= 0.75:
+                    player["_last_chat"] = now
+                    await broadcast({"type": "chat", "playerId": player_id, "username": player["username"], "color": player["color"], "text": text, "sentAt": int(time.time())})
             elif kind == "notebook" and player["floor"] == ROOM["floor"]:
                 try:
                     index = max(0, min(255, int(message.get("index", 0))))
