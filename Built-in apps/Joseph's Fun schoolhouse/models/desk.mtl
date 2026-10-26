@@ -1,0 +1,32 @@
+# Blender 4.5.12 LTS MTL File: 'desk.blend'
+# www.blender.org
+
+newmtl Material.001
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Volumes/FLASH 2/Flash 1/Joseph's Basics Web Editions/Joseph's Basics In Understanding and Learning (web)/floor textures/textures/wood.png
+
+newmtl Material.002
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Volumes/FLASH 2/Flash 1/Joseph's Basics Web Editions/Joseph's Basics In Understanding and Learning (web)/floor textures/textures/wood.png
+
+newmtl Material.003
+Ns 0.000000
+Ka 1.000000 1.000000 1.000000
+Ks 0.500000 0.500000 0.500000
+Ke 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 2
+map_Kd /Volumes/FLASH 2/Flash 1/Joseph's Basics Web Editions/Joseph's Basics In Understanding and Learning (web)/floor textures/textures/wood.png
