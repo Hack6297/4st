@@ -1,0 +1,6 @@
+# The multiplayer WebSocket server is deployed separately on Render.
+# Vercel hosts the static 4 Studios site and offline game only.
+server.py
+requirements.txt
+render.yaml
+.python-version
