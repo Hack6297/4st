@@ -174,6 +174,10 @@ async def websocket_handler(request):
     return websocket
 
 
+async def health_api(_request):
+    return web.json_response({"status": "ok", "players": len(PLAYERS)})
+
+
 async def news_api(_request):
     try:
         return web.json_response({"items": await asyncio.to_thread(collect_news_items)})
@@ -283,6 +287,7 @@ def collect_wallpapers():
 
 def create_app():
     app = web.Application()
+    app.router.add_get("/health", health_api)
     app.router.add_get("/api/news", news_api)
     app.router.add_get("/api/wallpapers", wallpapers_api)
     app.router.add_get("/ws", websocket_handler)
