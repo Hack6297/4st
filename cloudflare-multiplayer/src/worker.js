@@ -1,4 +1,10 @@
 const COLORS = ["#ff4040", "#43a8ff", "#43e06f", "#ffe044", "#d65cff", "#ff923d", "#4de4df", "#ff70b7"];
+const FEATURED_JOSEPH_STORY = {
+  source: "4STUDIOS",
+  title: "Joseph's Fun Schoolhouse is now playable online",
+  link: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/Josephs_Basics.html",
+  image: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/bonus2000/title-reference.png",
+};
 
 export default {
   async fetch(request, env) {
@@ -47,12 +53,12 @@ async function liveNews() {
     });
     if (!response.ok) throw new Error(`BBC returned ${response.status}`);
     const xml = await response.text();
-    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 4).map((match) => ({
+    const items = [FEATURED_JOSEPH_STORY, ...[...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 3).map((match) => ({
       source: "BBC",
       title: rssField(match[1], "title"),
       link: rssField(match[1], "link"),
       image: rssThumbnail(match[1]),
-    })).filter((item) => item.title && item.link);
+    }))].filter((item) => item.title && item.link);
     if (!items.length) throw new Error("BBC returned no headlines");
     return Response.json({ items }, { headers: { "Cache-Control": "public, max-age=300" } });
   } catch {
