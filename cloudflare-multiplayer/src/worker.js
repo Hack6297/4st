@@ -3,6 +3,9 @@ const COLORS = ["#ff4040", "#43a8ff", "#43e06f", "#ffe044", "#d65cff", "#ff923d"
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/news") {
+      return liveNews();
+    }
     if (url.pathname === "/health") {
       return Response.json({ status: "ok", service: "four-studios-multiplayer" });
     }
@@ -12,6 +15,50 @@ export default {
     return env.ROOMS.getByName("public-schoolhouse").fetch(request);
   },
 };
+
+function decodeXml(value = "") {
+  return value
+    .replace(/<!\[CDATA\[([\s\S]*?)\]\]>/g, "$1")
+    .replace(/&amp;/g, "&")
+    .replace(/&quot;/g, "\"")
+    .replace(/&#39;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/<[^>]*>/g, "")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function rssField(item, name) {
+  const match = item.match(new RegExp(`<${name}[^>]*>([\\s\\S]*?)</${name}>`, "i"));
+  return decodeXml(match?.[1] || "");
+}
+
+function rssThumbnail(item) {
+  const match = item.match(/<media:thumbnail[^>]+url=["']([^"']+)["']/i);
+  return decodeXml(match?.[1] || "");
+}
+
+async function liveNews() {
+  try {
+    const response = await fetch("https://feeds.bbci.co.uk/news/rss.xml", {
+      headers: { "User-Agent": "4StudiosHeadlines/1.0" },
+      cf: { cacheTtl: 300, cacheEverything: true },
+    });
+    if (!response.ok) throw new Error(`BBC returned ${response.status}`);
+    const xml = await response.text();
+    const items = [...xml.matchAll(/<item>([\s\S]*?)<\/item>/gi)].slice(0, 4).map((match) => ({
+      source: "BBC",
+      title: rssField(match[1], "title"),
+      link: rssField(match[1], "link"),
+      image: rssThumbnail(match[1]),
+    })).filter((item) => item.title && item.link);
+    if (!items.length) throw new Error("BBC returned no headlines");
+    return Response.json({ items }, { headers: { "Cache-Control": "public, max-age=300" } });
+  } catch {
+    return Response.json({ items: [] }, { status: 503, headers: { "Cache-Control": "no-store" } });
+  }
+}
 
 export class MultiplayerRoom {
   constructor(ctx) {
@@ -138,7 +185,10 @@ export class MultiplayerRoom {
       player.a = this.number(message.a, -1000, 1000);
       player.floor = Math.max(1, Math.min(4, Number.parseInt(message.floor, 10) || this.room.floor));
       player.moving = Boolean(message.moving);
-      ws.serializeAttachment(this.publicPlayer(player));
+      // Keep the join marker in the hibernatable WebSocket attachment. Without
+      // it, the next state update is treated as an invalid first message and
+      // the player is immediately disconnected.
+      ws.serializeAttachment({ joined: true, ...this.publicPlayer(player), lastChat: player.lastChat });
       this.broadcast({ type: "state", ...this.publicPlayer(player) }, player.id);
     } else if (message.type === "chat") {
       const now = Date.now();

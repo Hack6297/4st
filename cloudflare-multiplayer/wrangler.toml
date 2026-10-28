@@ -14,3 +14,7 @@ new_sqlite_classes = ["MultiplayerRoom"]
 pattern = "www.4studios.club/ws*"
 zone_name = "4studios.club"
 
+[[routes]]
+pattern = "www.4studios.club/api/news*"
+zone_name = "4studios.club"
+
