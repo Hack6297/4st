@@ -369,6 +369,8 @@ gameSource=gameSource.replace('from "./extra-layouts.js"',`from '${extraLayoutsU
 gameSource=gameSource.replace('from "./vendor/three/examples/jsm/loaders/OBJLoader.js"',`from '${objUrl}'`);
 gameSource=gameSource.replace('from "./vendor/three/examples/jsm/loaders/MTLLoader.js"',`from '${mtlUrl}'`);
 gameSource=gameSource.replace('from "./vendor/oimo.js"',`from '${oimoUrl}'`);
+// Joseph keeps a steady vertical position while walking, trapped, or thrown.
+gameSource=gameSource.replace(/const bob=moving\?.*?,lean=/,'const bob=0,lean=');
 import(moduleUrl(gameSource)).catch(error=>{console.error(error);alert('The offline game could not start: '+error.message)});
 </script>
 </body>

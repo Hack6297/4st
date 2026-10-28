@@ -1,6 +1,7 @@
-# The multiplayer WebSocket server is deployed separately on Render.
+# The multiplayer WebSocket server is deployed separately on Cloudflare Workers.
 # Vercel hosts the static 4 Studios site and offline game only.
 server.py
 requirements.txt
 render.yaml
 .python-version
+cloudflare-multiplayer/
