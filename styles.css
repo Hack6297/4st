@@ -397,6 +397,11 @@ button {
   z-index: 2;
 }
 
+.built-in-stage .start-tile__title {
+  font-size: 1.2rem;
+  white-space: nowrap;
+}
+
 .start-tile__description {
   position: relative;
   max-width: 92%;

@@ -3,7 +3,6 @@ const FEATURED_JOSEPH_STORY = {
   source: "4STUDIOS",
   title: "Joseph's Fun Schoolhouse is now playable online",
   link: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/Josephs_Basics.html",
-  image: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/bonus2000/title-reference.png",
 };
 
 export default {
