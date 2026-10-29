@@ -1,0 +1,8 @@
+{
+  "type": "water",
+  "solid": false,
+  "collidable": false,
+  "breakable": false,
+  "liquid": true,
+  "gravity": false
+}

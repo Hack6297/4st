@@ -46,10 +46,6 @@ body {
   min-height: 100%;
 }
 
-body.is-built-in {
-  background: url("./AeroVistaX%20Wallpapers/Final9.jpg") center center / cover no-repeat fixed;
-}
-
 body {
   font-family: "SegoeUI", "HelveticaNeue";
   background: var(--wallpaper, url("./imageres/home_page_bg.jpg")) center center / cover no-repeat fixed;
@@ -170,6 +166,11 @@ button {
 
 .built-in-stage {
   padding: 26px 22px;
+}
+
+.built-in-stage__grid {
+  grid-template-columns: repeat(auto-fill, var(--tile-size));
+  grid-auto-flow: row dense;
 }
 
 .built-in-app-icon {
@@ -398,8 +399,13 @@ button {
 }
 
 .built-in-stage .start-tile__title {
-  font-size: 1.2rem;
-  white-space: nowrap;
+  max-width: 100%;
+  font-size: 0.88rem;
+  line-height: 1.12;
+}
+
+.built-in-stage .start-tile__description {
+  display: none;
 }
 
 .start-tile__description {

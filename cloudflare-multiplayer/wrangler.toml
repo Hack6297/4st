@@ -6,9 +6,17 @@ compatibility_date = "2026-10-27"
 name = "ROOMS"
 class_name = "MultiplayerRoom"
 
+[[durable_objects.bindings]]
+name = "MINECRAFT_ROOMS"
+class_name = "MinecraftRoom"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["MultiplayerRoom"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["MinecraftRoom"]
 
 [[routes]]
 pattern = "www.4studios.club/ws*"
@@ -16,5 +24,9 @@ zone_name = "4studios.club"
 
 [[routes]]
 pattern = "www.4studios.club/api/news*"
+zone_name = "4studios.club"
+
+[[routes]]
+pattern = "www.4studios.club/minecraft*"
 zone_name = "4studios.club"
 

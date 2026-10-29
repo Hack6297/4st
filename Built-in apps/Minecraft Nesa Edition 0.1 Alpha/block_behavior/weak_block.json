@@ -1,0 +1,8 @@
+{
+  "type": "weak_block",
+  "solid": true,
+  "collidable": true,
+  "breakable": true,
+  "hardness": 0.3,
+  "gravity": false
+}

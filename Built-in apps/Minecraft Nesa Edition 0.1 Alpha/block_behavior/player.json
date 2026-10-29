@@ -1,0 +1,7 @@
+{
+  "type": "player",
+  "solid": false,
+  "collidable": true,
+  "breakable": false,
+  "gravity": true
+}

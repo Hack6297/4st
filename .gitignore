@@ -2,14 +2,6 @@ __pycache__/
 *.pyc
 server.err.log
 server.out.log
-
-# wrangler files
-.wrangler
-.dev.vars*
-!.dev.vars.example
-.env*
-!.env.example
-
-# The complete NesaT offline project keeps its local SQLite search index here.
-# The database is larger than GitHub's per-file limit.
-Built-in apps/NesaT 2000/data/index.db
+._*
+.DS_Store
+Thumbs.db

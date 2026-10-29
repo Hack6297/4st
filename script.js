@@ -1,8 +1,11 @@
 (function () {
   const STORAGE_KEYS = {
     wallpaper: "4studios.wallpaper",
-    tiles: "4studios.tiles"
+    tiles: "4studios.tiles",
+    builtInLayout: "4studios.builtInLayout"
   };
+  const BUILT_IN_LAYOUT_VERSION = "small-left-to-right-v1";
+  const BUILT_IN_TILE_IDS = ["joseph-schoolhouse", "netsite-alpha", "nesat-2000", "toyblocks-1999", "minecraft-nesa-alpha"];
   const scroller = document.getElementById("tiles-scroller");
   const newsFeed = document.getElementById("news-feed");
   const customizeTrigger = document.getElementById("customize-trigger");
@@ -37,6 +40,7 @@
 
   closeWallpaperExplorer();
   applySavedWallpaper();
+  migrateBuiltInLayout();
   applySavedTileState();
   attachTileSurfaces(document);
   enableTileDragging(document);
@@ -46,22 +50,16 @@
     homeStage.hidden = builtIn;
     builtInStage.hidden = !builtIn;
     document.body.classList.toggle("is-built-in", builtIn);
-    customizeTrigger.hidden = builtIn;
-    customizeDock.hidden = builtIn;
     homeNav.classList.toggle("is-active", !builtIn);
     builtInNav.classList.toggle("is-active", builtIn);
     if (builtIn) {
       homeNav.removeAttribute("aria-current");
       builtInNav.setAttribute("aria-current", "page");
-      customizeOpen = false;
-      customizePanel.hidden = true;
-      customizeTrigger.classList.remove("is-active");
-      customizeTrigger.setAttribute("aria-expanded", "false");
       clearSelectedTile();
-      closeWallpaperExplorer();
     } else {
       builtInNav.removeAttribute("aria-current");
       homeNav.setAttribute("aria-current", "page");
+      clearSelectedTile();
     }
   }
 
@@ -86,7 +84,7 @@
     scroller.scrollLeft += event.deltaY;
   }, { passive: false });
 
-  scroller.addEventListener("click", function (event) {
+  function handleTileSelection(event) {
     const tile = event.target.closest(".start-tile[data-tile-id]");
     if (draggedRecently && tile) {
       event.preventDefault();
@@ -99,7 +97,10 @@
 
     event.preventDefault();
     selectTile(tile);
-  });
+  }
+
+  scroller.addEventListener("click", handleTileSelection);
+  builtInStage.addEventListener("click", handleTileSelection);
 
   if (customizeTrigger && customizePanel) {
     customizeTrigger.addEventListener("click", function () {
@@ -453,6 +454,22 @@
         grid.appendChild(entry.tile);
       });
     });
+  }
+
+  function migrateBuiltInLayout() {
+    if (localStorage.getItem(STORAGE_KEYS.builtInLayout) === BUILT_IN_LAYOUT_VERSION) {
+      return;
+    }
+    const saved = parseStoredJson(STORAGE_KEYS.tiles);
+    if (saved) {
+      BUILT_IN_TILE_IDS.forEach(function (tileId) {
+        if (saved[tileId]) {
+          saved[tileId].size = "small";
+        }
+      });
+      localStorage.setItem(STORAGE_KEYS.tiles, JSON.stringify(saved));
+    }
+    localStorage.setItem(STORAGE_KEYS.builtInLayout, BUILT_IN_LAYOUT_VERSION);
   }
 
   function saveTileState() {

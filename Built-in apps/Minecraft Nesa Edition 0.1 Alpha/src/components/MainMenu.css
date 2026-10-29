@@ -1,0 +1,129 @@
+@font-face {
+  font-family: 'Mojang';
+  src: url('/fonts/Mojang-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.main-menu {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  min-height: 100vh;
+  z-index: 9999;
+  overflow: hidden;
+  background: #000;
+  font-family: 'Mojang', 'Courier New', monospace;
+}
+
+.main-menu-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #1c120b url('/textures/title_background.png') center / cover no-repeat;
+  image-rendering: pixelated;
+}
+
+.main-menu-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.32);
+  pointer-events: none;
+}
+
+.startup-intro {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #000;
+  opacity: 1;
+  transition: opacity 2s linear;
+}
+
+.startup-intro.is-fading {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.startup-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.main-menu-content {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  display: grid;
+  grid-template-rows: minmax(110px, 28vh) auto 1fr;
+  justify-items: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.main-menu-content.is-ready {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.main-menu-title {
+  align-self: end;
+  width: min(572px, 76vw);
+  height: auto;
+  image-rendering: pixelated;
+  margin-bottom: clamp(22px, 5vh, 48px);
+  filter: drop-shadow(4px 6px 0 rgba(0, 0, 0, 0.55));
+}
+
+.main-menu-buttons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.menu-btn {
+  width: min(400px, 72vw);
+  aspect-ratio: 400 / 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Mojang', 'Courier New', monospace;
+  font-size: clamp(15px, 2.2vw, 20px);
+  font-weight: 400;
+  color: #fff;
+  text-shadow: 2px 2px 0 #202020;
+  background: url('/ui/button_wide.png') center / 100% 100% no-repeat;
+  border: 0;
+  padding: 0 16px 3px;
+  cursor: pointer;
+  image-rendering: pixelated;
+  transition: filter 0.1s ease, transform 0.05s ease;
+}
+
+.menu-btn:hover {
+  filter: brightness(1.18);
+}
+
+.menu-btn:active {
+  transform: translateY(1px);
+}
+
+.main-menu-copyright {
+  position: absolute;
+  left: 12px;
+  bottom: 10px;
+  z-index: 3;
+  color: #fff;
+  font-family: 'Mojang', 'Courier New', monospace;
+  font-size: clamp(10px, 1.6vw, 14px);
+  font-weight: 400;
+  text-shadow: 2px 2px 0 #111;
+  opacity: 0.95;
+}

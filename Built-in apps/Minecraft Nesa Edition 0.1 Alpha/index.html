@@ -8,7 +8,7 @@
     <style>
         @font-face {
             font-family: 'Mojang';
-            src: url('./assets/Mojang-Regular-PyMKMJyc.ttf') format('truetype');
+            src: url('fonts/Mojang-Regular.ttf') format('truetype');
             font-weight: 400;
             font-style: normal;
         }
@@ -43,7 +43,7 @@
             position: absolute;
             inset: 0;
             z-index: 3;
-            background: #000 url('./assets/title_background-CDaY8jlf.png') center / cover no-repeat;
+            background: #000 url('textures/title_background.png') center / cover no-repeat;
             opacity: 1;
             transition: opacity 2s linear;
         }
@@ -75,7 +75,7 @@
         #titleBackground {
             position: absolute;
             inset: 0;
-            background: #1c120b url('./assets/title_background-CDaY8jlf.png') center / cover no-repeat;
+            background: #1c120b url('textures/title_background.png') center / cover no-repeat;
             image-rendering: pixelated;
         }
 
@@ -137,7 +137,7 @@
             font-size: clamp(15px, 2.2vw, 20px);
             font-weight: 400;
             text-shadow: 2px 2px 0 #202020;
-            background: url('./assets/button_wide-DXMNHO84.png') center / 100% 100% no-repeat;
+            background: url('ui/button_wide.png') center / 100% 100% no-repeat;
             border: 0;
             padding: 0 16px 3px;
             cursor: pointer;
@@ -434,10 +434,10 @@
 <body>
     <div id="titleScreen">
         <div id="titleBackground">
-            <video id="titlePanorama" src="./assets/ponorama_1-9fTnkrsH.mp4" autoplay muted loop playsinline></video>
+            <video id="titlePanorama" src="videos/ponorama_1.mp4" autoplay muted loop playsinline></video>
         </div>
         <div id="titleContent">
-            <img id="titleLogo" src="./assets/minecraft_nesa_title-CPAGoTJN.png" alt="">
+            <img id="titleLogo" src="minecraft_nesa_title.png" alt="">
             <div id="menuButtons">
                 <button class="titleButton" id="singleplayerButton">Singleplayer</button>
                 <button class="titleButton" id="multiplayerButton">Multiplayer</button>
@@ -448,7 +448,7 @@
         <p id="copyrightNotice">All Copyrights Belong to Microsoft</p>
         <p id="versionNotice">v 0.1 Alpha</p>
         <div id="startupIntro">
-            <video id="startupVideo" src="./assets/startup-p8SWoiZ9.mp4" autoplay muted playsinline></video>
+            <video id="startupVideo" src="videos/startup.mp4" autoplay muted playsinline></video>
             <audio id="startupAudio" autoplay></audio>
         </div>
     </div>
@@ -737,7 +737,7 @@
         const DEV_GAME_PORTS = new Set(['3000', '5173']);
         const SYNC_SERVER = DEV_GAME_PORTS.has(window.location.port)
             ? `http://${SYNC_HOST}:8765`
-            : window.location.origin;
+            : 'https://www.4studios.club/minecraft';
         let WORLD_SEED = 199201;
         const playerId = crypto.randomUUID();
         let lastEventId = 0;

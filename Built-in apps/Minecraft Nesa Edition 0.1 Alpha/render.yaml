@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: minecraft-nesa-edition
+    env: python
+    plan: free
+    buildCommand: echo "No build needed"
+    startCommand: python server.py
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0

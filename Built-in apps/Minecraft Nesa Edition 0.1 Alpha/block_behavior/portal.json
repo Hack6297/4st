@@ -1,0 +1,8 @@
+{
+  "type": "portal",
+  "solid": false,
+  "collidable": false,
+  "breakable": false,
+  "portal": true,
+  "gravity": false
+}

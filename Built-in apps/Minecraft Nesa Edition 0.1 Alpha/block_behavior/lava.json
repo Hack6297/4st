@@ -1,0 +1,9 @@
+{
+  "type": "lava",
+  "solid": false,
+  "collidable": false,
+  "breakable": false,
+  "liquid": true,
+  "damage": 4,
+  "gravity": false
+}

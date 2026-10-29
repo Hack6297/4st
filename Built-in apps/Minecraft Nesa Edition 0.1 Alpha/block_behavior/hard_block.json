@@ -1,0 +1,8 @@
+{
+  "type": "hard_block",
+  "solid": true,
+  "collidable": true,
+  "breakable": true,
+  "hardness": 4,
+  "gravity": false
+}

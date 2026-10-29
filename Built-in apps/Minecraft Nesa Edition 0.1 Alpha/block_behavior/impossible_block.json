@@ -1,0 +1,8 @@
+{
+  "type": "impossible_block",
+  "solid": true,
+  "collidable": true,
+  "breakable": false,
+  "hardness": 9999,
+  "gravity": false
+}

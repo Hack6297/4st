@@ -1,0 +1,9 @@
+{
+  "type": "tnt",
+  "solid": true,
+  "collidable": true,
+  "breakable": true,
+  "explosive": true,
+  "hardness": 0.5,
+  "gravity": false
+}

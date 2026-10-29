@@ -1,0 +1,8 @@
+{
+  "type": "fire",
+  "solid": false,
+  "collidable": false,
+  "breakable": true,
+  "damage": 1,
+  "gravity": false
+}

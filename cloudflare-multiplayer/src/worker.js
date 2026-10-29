@@ -2,7 +2,7 @@ const COLORS = ["#ff4040", "#43a8ff", "#43e06f", "#ffe044", "#d65cff", "#ff923d"
 const FEATURED_JOSEPH_STORY = {
   source: "4STUDIOS",
   title: "Joseph's Fun Schoolhouse is now playable online",
-  link: "https://joseph-fun-schoolhouse.pages.dev/Josephs_Basics.html",
+  link: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/Josephs_Basics.html",
   image: "https://www.4studios.club/imageres/joseph-splash.svg",
 };
 
@@ -14,6 +14,11 @@ export default {
     }
     if (url.pathname === "/health") {
       return Response.json({ status: "ok", service: "four-studios-multiplayer" });
+    }
+    if (url.pathname === "/minecraft" || url.pathname.startsWith("/minecraft/")) {
+      const gameUrl = new URL(request.url);
+      gameUrl.pathname = gameUrl.pathname.slice("/minecraft".length) || "/";
+      return env.MINECRAFT_ROOMS.getByName("public-world").fetch(new Request(gameUrl, request));
     }
     if (url.pathname !== "/ws" || request.headers.get("Upgrade")?.toLowerCase() !== "websocket") {
       return new Response("Not found", { status: 404 });
@@ -254,5 +259,122 @@ export class MultiplayerRoom {
       this.startOrResume();
     }
     this.ctx.waitUntil(this.persistRoom());
+  }
+}
+
+const MINECRAFT_CORS = {
+  "Access-Control-Allow-Origin": "*",
+  "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
+  "Access-Control-Allow-Headers": "Content-Type",
+};
+
+export class MinecraftRoom {
+  constructor(ctx) {
+    this.ctx = ctx;
+    this.state = { seed: 199201, spawn: null, cubes: [], removed: [], players: {}, chat: [] };
+    this.events = [];
+    this.nextEventId = 1;
+    ctx.blockConcurrencyWhile(async () => {
+      const saved = await ctx.storage.get("minecraft-state");
+      if (saved) {
+        this.state = saved.state || this.state;
+        this.events = saved.events || [];
+        this.nextEventId = saved.nextEventId || 1;
+      }
+    });
+  }
+
+  json(payload, status = 200) {
+    return Response.json(payload, { status, headers: MINECRAFT_CORS });
+  }
+
+  number(value, fallback = 0) {
+    const parsed = Number(value);
+    return Number.isFinite(parsed) ? parsed : fallback;
+  }
+
+  vector(value, fallback) {
+    return Array.isArray(value) && value.length >= 3
+      ? value.slice(0, 3).map((item, index) => this.number(item, fallback[index]))
+      : fallback;
+  }
+
+  addEvent(event) {
+    const recorded = { ...event, id: this.nextEventId++, time: Date.now() / 1000 };
+    this.events.push(recorded);
+    if (this.events.length > 1000) this.events.splice(0, this.events.length - 1000);
+    return recorded;
+  }
+
+  async persist() {
+    await this.ctx.storage.put("minecraft-state", {
+      state: this.state,
+      events: this.events,
+      nextEventId: this.nextEventId,
+    });
+  }
+
+  async fetch(request) {
+    if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: MINECRAFT_CORS });
+    const url = new URL(request.url);
+    const path = url.pathname;
+
+    if (request.method === "GET" && path === "/state") {
+      return this.json({ state: this.state, last_event_id: this.events.at(-1)?.id || 0 });
+    }
+    if (request.method === "GET" && path === "/events") {
+      const since = Math.max(0, Number.parseInt(url.searchParams.get("since") || "0", 10) || 0);
+      return this.json({ events: this.events.filter((event) => event.id > since), last_event_id: this.events.at(-1)?.id || 0 });
+    }
+    if (request.method !== "POST") return this.json({ error: "not found" }, 404);
+
+    let body = {};
+    try { body = await request.json(); } catch {}
+    const playerId = String(body.player_id || "").trim().slice(0, 80);
+    if (!playerId) return this.json({ error: "player_id required" }, 400);
+
+    let response;
+    if (path === "/join") {
+      if (!this.state.spawn) this.state.spawn = this.vector(body.spawn, [0.5, 72, 0.5]);
+      this.state.players[playerId] = { position: this.state.spawn, rotation: [0, 0, 0], last_seen: Date.now() / 1000 };
+      this.addEvent({ type: "join", player_id: playerId, ...this.state.players[playerId] });
+      response = { ok: true, state: this.state, last_event_id: this.events.at(-1)?.id || 0 };
+    } else if (path === "/move") {
+      const player = this.state.players[playerId] || {};
+      player.position = this.vector(body.position, [0, 15, 0]);
+      player.rotation = this.vector(body.rotation, [0, 0, 0]);
+      player.last_seen = Date.now() / 1000;
+      this.state.players[playerId] = player;
+      response = { ok: true, event: this.addEvent({ type: "move", player_id: playerId, position: player.position, rotation: player.rotation }) };
+    } else if (path === "/place") {
+      const cube = body.cube || {};
+      const cleanCube = { id: String(cube.id || ""), x: this.number(cube.x), y: this.number(cube.y), z: this.number(cube.z), texture: String(cube.texture || "grass") };
+      if (!cleanCube.id) return this.json({ error: "cube.id required" }, 400);
+      this.state.removed = this.state.removed.filter((id) => id !== cleanCube.id);
+      this.state.cubes = this.state.cubes.filter((old) => old.id !== cleanCube.id);
+      this.state.cubes.push(cleanCube);
+      response = { ok: true, event: this.addEvent({ type: "place", player_id: playerId, cube: cleanCube }) };
+    } else if (path === "/break") {
+      const cubeId = String(body.cube_id || "");
+      this.state.cubes = this.state.cubes.filter((cube) => cube.id !== cubeId);
+      if (cubeId && !this.state.removed.includes(cubeId)) this.state.removed.push(cubeId);
+      if (this.state.removed.length > 5000) this.state.removed.splice(0, this.state.removed.length - 5000);
+      response = { ok: true, event: this.addEvent({ type: "break", player_id: playerId, cube_id: cubeId }) };
+    } else if (path === "/chat") {
+      const message = String(body.message || "").replace(/[\x00-\x1f\x7f]/g, " ").trim().slice(0, 160);
+      if (!message) return this.json({ error: "message required" }, 400);
+      const chat = { player_id: playerId, message, time: Date.now() / 1000 };
+      this.state.chat.push(chat);
+      if (this.state.chat.length > 100) this.state.chat.shift();
+      response = { ok: true, event: this.addEvent({ type: "chat", ...chat }) };
+    } else if (path === "/quit") {
+      delete this.state.players[playerId];
+      response = { ok: true, event: this.addEvent({ type: "quit", player_id: playerId }) };
+    } else {
+      return this.json({ error: "not found" }, 404);
+    }
+
+    await this.persist();
+    return this.json(response);
   }
 }

@@ -1,0 +1,160 @@
+/* Base Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Courier New', monospace;
+    overflow: hidden;
+    background: #000;
+}
+
+/* Info Panel */
+#info {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    color: white;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 100;
+    font-size: 14px;
+    max-width: 300px;
+}
+
+#info h3 {
+    margin: 0 0 10px 0;
+}
+
+/* Controls Panel */
+.controls {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.7);
+    padding: 15px;
+    border-radius: 5px;
+    z-index: 100;
+}
+
+/* Block Selector */
+.block-selector {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    max-width: 250px;
+}
+
+.block-btn {
+    width: 40px;
+    height: 40px;
+    border: 2px solid #666;
+    cursor: pointer;
+    transition: all 0.1s;
+}
+
+.block-btn:hover {
+    transform: scale(1.1);
+    border-color: #fff;
+}
+
+.block-btn.selected {
+    border-color: #FFD700;
+    box-shadow: 0 0 10px #FFD700;
+}
+
+#selectedBlock {
+    color: #FFD700;
+    font-weight: bold;
+}
+
+/* Settings */
+.setting {
+    margin: 10px 0;
+    color: white;
+}
+
+.setting label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.setting input[type="range"] {
+    width: 100%;
+}
+
+/* Crosshair */
+#crosshair {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+    z-index: 99;
+}
+
+#crosshair::before,
+#crosshair::after {
+    content: '';
+    position: absolute;
+    background: white;
+}
+
+#crosshair::before {
+    width: 2px;
+    height: 20px;
+    left: 9px;
+    top: 0;
+}
+
+#crosshair::after {
+    width: 20px;
+    height: 2px;
+    left: 0;
+    top: 9px;
+}
+
+/* Loading Screen */
+#loadingScreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.9);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: white;
+    font-size: 24px;
+}
+
+#loadingScreen h2 {
+    margin-bottom: 20px;
+}
+
+#loadingBar {
+    width: 400px;
+    height: 30px;
+    background: #333;
+    border: 2px solid #666;
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+#loadingProgress {
+    height: 100%;
+    background: linear-gradient(90deg, #4CAF50, #8BC34A);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+#loadingText {
+    margin-top: 10px;
+    font-size: 16px;
+    color: #aaa;
+}
