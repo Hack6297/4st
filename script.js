@@ -150,26 +150,52 @@
   }
 
   async function loadWallpapers() {
+    const bundled = buildBundledWallpaperItems();
     try {
       const response = await fetch("/api/wallpapers");
       if (!response.ok) {
         throw new Error("Wallpaper request failed");
       }
       const data = await response.json();
-      populateWallpaperSelect(data.items && data.items.length ? data.items : buildBundledWallpaperItems());
+      const remoteItems = data.items && data.items.length ? data.items : [];
+      populateWallpaperSelect(bundled.concat(remoteItems));
     } catch (error) {
-      populateWallpaperSelect(buildBundledWallpaperItems());
+      populateWallpaperSelect(bundled);
     }
   }
 
   function buildBundledWallpaperItems() {
-    return [
-      { name: "Pumpkin patch with dry grass", path: "/imageres/wallpapers/pumpkin-dry-grass.jpg" },
-      { name: "Pumpkin field", path: "/imageres/wallpapers/pumpkin-field.jpg" },
-      { name: "Pumpkin row", path: "/imageres/wallpapers/pumpkin-row.jpg" },
-      { name: "Pumpkin field at sunset", path: "/imageres/wallpapers/pumpkin-sunset-field.jpg" },
-      { name: "Pumpkin close-up at sunset", path: "/imageres/wallpapers/pumpkin-sunset-close.jpg" }
+    const oldNames = [];
+    const addNumbered = function (prefix, count) {
+      for (let number = 1; number <= count; number += 1) {
+        oldNames.push(prefix + number + ".jpg");
+      }
+    };
+
+    oldNames.push("null0.jpg");
+    addNumbered("beta", 10);
+    oldNames.push("beta3 — копия.jpg");
+    addNumbered("example", 5);
+    addNumbered("Extra", 2);
+    addNumbered("Final", 14);
+    oldNames.push("Final2 — копия.jpg", "Final9 — копия.jpg", "Instal1.jpg");
+    addNumbered("Starter", 28);
+    addNumbered("Unreleased", 13);
+
+    const pumpkins = [
+      { name: "Pumpkin patch with dry grass", value: "./imageres/wallpapers/pumpkin-dry-grass.jpg" },
+      { name: "Pumpkin field", value: "./imageres/wallpapers/pumpkin-field.jpg" },
+      { name: "Pumpkin row", value: "./imageres/wallpapers/pumpkin-row.jpg" },
+      { name: "Pumpkin field at sunset", value: "./imageres/wallpapers/pumpkin-sunset-field.jpg" },
+      { name: "Pumpkin close-up at sunset", value: "./imageres/wallpapers/pumpkin-sunset-close.jpg" }
     ];
+    const classics = oldNames.map(function (name) {
+      return {
+        name: name,
+        value: "https://4studios-wallpapers.pages.dev/" + encodeURIComponent(name)
+      };
+    });
+    return pumpkins.concat(classics);
   }
 
   function populateWallpaperSelect(items) {
@@ -179,12 +205,13 @@
     wallpaperLibraryItems = [];
     items.forEach(function (item) {
       const option = document.createElement("option");
-      option.value = "." + item.path;
+      const value = item.value || (String(item.path).startsWith("http") ? item.path : "." + item.path);
+      option.value = value;
       option.textContent = item.name;
       wallpaperSelect.appendChild(option);
       const normalizedItem = {
         name: item.name,
-        value: "." + item.path
+        value: value
       };
       wallpaperItems.push(normalizedItem);
       wallpaperLibraryItems.push(normalizedItem);
@@ -577,15 +604,7 @@
   }
 
   function getTileSurfacePath(tile) {
-    if (tile.classList.contains("start-tile--large")) {
-      return "./imageres/tile_large.svg";
-    }
-
-    if (tile.classList.contains("start-tile--wide")) {
-      return "./imageres/tile_wide.svg";
-    }
-
-    return "./imageres/tile.svg";
+    return "./imageres/tile-2000.png";
   }
 
   function parseStoredJson(key) {
