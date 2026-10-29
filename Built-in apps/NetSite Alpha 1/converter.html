@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scratch 3 → FN0 Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;color:#e8e8e8;min-height:100vh;display:flex;flex-direction:column;align-items:center;padding:40px 20px}
+h1{font-size:28px;margin-bottom:6px;color:#f0c040}
+.subtitle{font-size:14px;color:#aaa;margin-bottom:30px}
+.drop-zone{width:500px;max-width:90vw;border:3px dashed #555;border-radius:16px;padding:50px 30px;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;background:#16213e}
+.drop-zone:hover,.drop-zone.drag-over{border-color:#f0c040;background:#1a2940}
+.drop-zone p{font-size:16px;margin-bottom:10px}
+.drop-zone .formats{font-size:12px;color:#888}
+input[type=file]{display:none}
+#log{width:500px;max-width:90vw;margin-top:24px;background:#0f3460;border-radius:10px;padding:16px;font-family:Consolas,monospace;font-size:12px;max-height:400px;overflow-y:auto;white-space:pre-wrap;display:none}
+#log .ok{color:#5cb712}
+#log .warn{color:#e1a91a}
+#log .err{color:#e74c3c}
+#log .info{color:#2ca5e2}
+.result{margin-top:16px;display:none}
+.result button{padding:12px 32px;border:none;border-radius:8px;background:#5cb712;color:#fff;font-size:16px;font-weight:bold;cursor:pointer;transition:background .2s}
+.result button:hover{background:#4a9e0a}
+.stats{margin-top:12px;font-size:13px;color:#aaa}
+</style>
+</head>
+<body>
+
+<h1>Scratch 3 &rarr; FN0 Converter</h1>
+<p class="subtitle">Convert Scratch 3.0 (.sb3) projects to FunnyNetworkEngine .fn0 format</p>
+
+<div class="drop-zone" id="dropZone">
+  <p>Drop a .sb3 file here or click to browse</p>
+  <span class="formats">.sb3 (Scratch 3.0)</span>
+  <input type="file" id="fileInput" accept=".sb3">
+</div>
+
+<div id="log"></div>
+
+<div class="result" id="result">
+  <button id="downloadBtn">Download .fn0</button>
+  <div class="stats" id="stats"></div>
+</div>
+
+<script>
+/* =================================================================
+   SCRATCH 3.0 (.sb3)  →  FunnyNetworkEngine (.fn0) CONVERTER
+   =================================================================
+   Converts SB3 projects (ZIP with project.json + assets) into
+   FN0 format (JSON with Blockly v11 workspace serialization).
+
+   Block definitions match blocks.js exactly:
+     - Field names: MSG, KEY, SOUND, COL, Q, STYLE, etc.
+     - Value input names: STEPS, DEG, DX, DY, SECS, etc.
+     - Statement input names: DO, ELSE, BODY
+     - Variable fields: VAR (Blockly.FieldVariable)
+   ================================================================= */
+
+// ── Logging ──
+var logEl = document.getElementById('log');
+function log(msg, cls) {
+  logEl.style.display = 'block';
+  var s = document.createElement('span');
+  s.className = cls || '';
+  s.textContent = msg + '\n';
+  logEl.appendChild(s);
+  logEl.scrollTop = logEl.scrollHeight;
+}
+
+// ── Unique ID generator ──
+var _uid = 0;
+function uid() { return 'b' + (++_uid); }
+
+// ── Key name mapping (Scratch → FNE) ──
+var KEY_MAP = {
+  'space':'space','up arrow':'up','down arrow':'down','left arrow':'left','right arrow':'right',
+  'any':'any','a':'a','b':'b','c':'c','d':'d','e':'e','f':'f','g':'g','h':'h','i':'i','j':'j',
+  'k':'k','l':'l','m':'m','n':'n','o':'o','p':'p','q':'q','r':'r','s':'s','t':'t','u':'u',
+  'v':'v','w':'w','x':'x','y':'y','z':'z',
+  '0':'0','1':'1','2':'2','3':'3','4':'4','5':'5','6':'6','7':'7','8':'8','9':'9'
+};
+
+/* =================================================================
+   HELPERS  — extract values from Scratch 3.0 JSON
+   ================================================================= */
+
+// Get a field value from a Scratch block (fields are simple [value, id] arrays)
+function sf(block, name) {
+  var f = (block.fields || {})[name];
+  if (!f) return null;
+  return Array.isArray(f) ? f[0] : f;
+}
+function sfId(block, name) {
+  var f = (block.fields || {})[name];
+  return (f && Array.isArray(f) && f.length > 1) ? f[1] : null;
+}
+
+// Extract a literal value from a Scratch input
+// Scratch input format: [shadowType, value_or_blockRef, ...]
+// Value can be: [typeCode, value] for literals, or a string (block ID)
+function literal(block, inputName, allBlocks) {
+  var inp = (block.inputs || {})[inputName];
+  if (!inp) return '';
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var inner = arr[1];
+  if (inner == null) return '';
+  // Literal: [typeCode, value] — types 4-10 are number/string literals
+  if (Array.isArray(inner)) return String(inner[1] != null ? inner[1] : '');
+  // Shadow block reference
+  if (typeof inner === 'string' && allBlocks[inner]) {
+    var sh = allBlocks[inner];
+    for (var fname in (sh.fields || {})) {
+      var fv = sh.fields[fname];
+      return String(Array.isArray(fv) ? fv[0] : fv);
+    }
+  }
+  return String(inner);
+}
+
+// Read a menu-type input (Scratch uses a shadow block for dropdown menus)
+function menu(block, inputName, menuFieldName, allBlocks) {
+  var inp = (block.inputs || {})[inputName];
+  if (!inp) return null;
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var ref = arr[1];
+  if (ref && typeof ref === 'string' && allBlocks[ref]) {
+    return sf(allBlocks[ref], menuFieldName) || null;
+  }
+  // Could be an inline literal
+  if (Array.isArray(ref)) return String(ref[1] || '');
+  return null;
+}
+
+// Convert a Scratch input to a Blockly value input with a shadow (for number values)
+function numInput(block, scratchName, allBlocks, ctx) {
+  var inp = (block.inputs || {})[scratchName];
+  if (!inp) return null;
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var innerRef = arr[1];
+
+  // Reporter block (non-shadow)?
+  if (innerRef && typeof innerRef === 'string' && allBlocks[innerRef] && !allBlocks[innerRef].shadow) {
+    var rep = convertBlock(innerRef, allBlocks, ctx);
+    if (rep) return { block: rep };
+  }
+  // Literal → shadow
+  var val = literal(block, scratchName, allBlocks);
+  return { shadow: { type: 'math_number', id: uid(), fields: { NUM: val } } };
+}
+
+// Convert a Scratch input to a Blockly value input with text shadow
+function textInput(block, scratchName, allBlocks, ctx) {
+  var inp = (block.inputs || {})[scratchName];
+  if (!inp) return null;
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var innerRef = arr[1];
+  if (innerRef && typeof innerRef === 'string' && allBlocks[innerRef] && !allBlocks[innerRef].shadow) {
+    var rep = convertBlock(innerRef, allBlocks, ctx);
+    if (rep) return { block: rep };
+  }
+  var val = literal(block, scratchName, allBlocks);
+  return { shadow: { type: 'text', id: uid(), fields: { TEXT: val } } };
+}
+
+// Convert a boolean condition input
+function boolInput(block, scratchName, allBlocks, ctx) {
+  var inp = (block.inputs || {})[scratchName];
+  if (!inp) return null;
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var ref = arr[1];
+  if (ref && typeof ref === 'string' && allBlocks[ref]) {
+    var blk = convertBlock(ref, allBlocks, ctx);
+    if (blk) return { block: blk };
+  }
+  return null;
+}
+
+// Convert a substack (statement input inside C-blocks)
+function substackInput(block, scratchName, allBlocks, ctx) {
+  var inp = (block.inputs || {})[scratchName];
+  if (!inp) return null;
+  var arr = Array.isArray(inp) ? inp : [1, inp];
+  var ref = arr[1];
+  if (ref && typeof ref === 'string' && allBlocks[ref]) {
+    var chain = convertBlock(ref, allBlocks, ctx);
+    if (chain) return { block: chain };
+  }
+  return null;
+}
+
+// Resolve a Scratch variable reference to a Blockly variable field
+function varField(block, ctx) {
+  var name = sf(block, 'VARIABLE');
+  var origId = sfId(block, 'VARIABLE');
+  if (!name) return null;
+  if (origId && !ctx.varMap[origId]) {
+    ctx.varMap[origId] = { name: name, id: 'var_' + (++ctx.varCount) };
+  }
+  var v = origId ? ctx.varMap[origId] : null;
+  if (!v) {
+    var key = '_n_' + name;
+    if (!ctx.varMap[key]) ctx.varMap[key] = { name: name, id: 'var_' + (++ctx.varCount) };
+    v = ctx.varMap[key];
+  }
+  return { id: v.id, name: v.name, type: '' };
+}
+
+// Helper: clean nulls from an object
+function clean(obj) {
+  if (!obj) return undefined;
+  var out = {};
+  for (var k in obj) { if (obj[k] != null) out[k] = obj[k]; }
+  return Object.keys(out).length ? out : undefined;
+}
+
+/* =================================================================
+   OPCODE CONVERSION TABLE
+   Each entry: { type, map(sb, all, ctx) → {fields?, inputs?} }
+
+   Key naming convention matches blocks.js EXACTLY:
+   - scratch_move_steps: ValueInput "STEPS"
+   - scratch_turn_right: ValueInput "DEG"
+   - scratch_say: FieldTextInput "MSG"
+   - scratch_when_key: FieldDropdown "KEY"
+   - etc.
+   ================================================================= */
+var C = {}; // converters
+
+// ──────── MOTION ────────
+C['motion_movesteps'] = { t: 'scratch_move_steps', m: function(sb,a,c){ return { i:{ STEPS: numInput(sb,'STEPS',a,c) }}; }};
+C['motion_turnright'] = { t: 'scratch_turn_right', m: function(sb,a,c){ return { i:{ DEG: numInput(sb,'DEGREES',a,c) }}; }};
+C['motion_turnleft'] = { t: 'scratch_turn_left', m: function(sb,a,c){ return { i:{ DEG: numInput(sb,'DEGREES',a,c) }}; }};
+C['motion_gotoxy'] = { t: 'scratch_goto_xy', m: function(sb,a,c){ return { i:{ X: numInput(sb,'X',a,c), Y: numInput(sb,'Y',a,c) }}; }};
+C['motion_goto'] = { t: 'scratch_goto_target', m: function(sb,a,c){
+  var v = menu(sb,'TO','TO',a) || 'mouse';
+  if (v==='_random_') v='random'; if (v==='_mouse_') v='mouse';
+  return { f:{ TARGET: v }};
+}};
+C['motion_pointtowards'] = { t: 'scratch_point_towards', m: function(sb,a,c){
+  var v = menu(sb,'TOWARDS','TOWARDS',a) || 'mouse';
+  if (v==='_mouse_') v='mouse';
+  return { f:{ TARGET: v }};
+}};
+C['motion_glidesecstoxy'] = { t: 'scratch_glide', m: function(sb,a,c){
+  return { i:{ SECS: numInput(sb,'SECS',a,c), X: numInput(sb,'X',a,c), Y: numInput(sb,'Y',a,c) }};
+}};
+C['motion_pointindirection'] = { t: 'scratch_point_dir', m: function(sb,a,c){ return { i:{ DIR: numInput(sb,'DIRECTION',a,c) }}; }};
+C['motion_changexby'] = { t: 'scratch_change_x', m: function(sb,a,c){ return { i:{ DX: numInput(sb,'DX',a,c) }}; }};
+C['motion_changeyby'] = { t: 'scratch_change_y', m: function(sb,a,c){ return { i:{ DY: numInput(sb,'DY',a,c) }}; }};
+C['motion_setx'] = { t: 'scratch_set_x', m: function(sb,a,c){ return { i:{ X: numInput(sb,'X',a,c) }}; }};
+C['motion_sety'] = { t: 'scratch_set_y', m: function(sb,a,c){ return { i:{ Y: numInput(sb,'Y',a,c) }}; }};
+C['motion_ifonedgebounce'] = { t: 'scratch_bounce', m: function(){ return {}; }};
+C['motion_setrotationstyle'] = { t: 'scratch_set_rotation_style', m: function(sb){
+  var s = sf(sb,'STYLE')||'left-right'; return { f:{ STYLE: s }};
+}};
+C['motion_xposition'] = { t: 'scratch_x_pos', m: function(){ return {}; }};
+C['motion_yposition'] = { t: 'scratch_y_pos', m: function(){ return {}; }};
+C['motion_direction'] = { t: 'scratch_direction', m: function(){ return {}; }};
+
+// ──────── LOOKS ────────
+C['looks_say'] = { t: 'scratch_say', m: function(sb,a){
+  return { f:{ MSG: literal(sb,'MESSAGE',a)||'Hello!' }};
+}};
+C['looks_sayforsecs'] = { t: 'scratch_say_for', m: function(sb,a,c){
+  return { f:{ MSG: literal(sb,'MESSAGE',a)||'Hello!' }, i:{ SECS: numInput(sb,'SECS',a,c) }};
+}};
+C['looks_think'] = { t: 'scratch_think', m: function(sb,a){
+  return { f:{ MSG: literal(sb,'MESSAGE',a)||'Hmm…' }};
+}};
+C['looks_thinkforsecs'] = { t: 'scratch_think', m: function(sb,a){
+  return { f:{ MSG: literal(sb,'MESSAGE',a)||'Hmm…' }};
+}};
+C['looks_show'] = { t: 'scratch_show', m: function(){ return {}; }};
+C['looks_hide'] = { t: 'scratch_hide', m: function(){ return {}; }};
+C['looks_changesizeby'] = { t: 'scratch_change_size', m: function(sb,a,c){ return { i:{ CHANGE: numInput(sb,'CHANGE',a,c) }}; }};
+C['looks_setsizeto'] = { t: 'scratch_set_size', m: function(sb,a,c){ return { i:{ SIZE: numInput(sb,'SIZE',a,c) }}; }};
+C['looks_gotofrontback'] = { t: 'scratch_go_front', m: function(){ return {}; }};
+C['looks_goforwardbackwardlayers'] = { t: 'scratch_go_back', m: function(sb,a,c){ return { i:{ N: numInput(sb,'NUM',a,c) }}; }};
+C['looks_nextcostume'] = { t: 'scratch_next_costume', m: function(){ return {}; }};
+C['looks_switchcostumeto'] = { t: 'scratch_switch_costume', m: function(sb,a,c){
+  var v = menu(sb,'COSTUME','COSTUME',a) || '1';
+  return { i:{ NUM: { shadow:{ type:'math_number', id:uid(), fields:{ NUM: v }}}}};
+}};
+C['looks_costumenumbername'] = { t: 'scratch_costume_number', m: function(){ return {}; }};
+C['looks_switchbackdropto'] = { t: 'scratch_set_bg_image', m: function(sb,a){
+  return { f:{ SRC: menu(sb,'BACKDROP','BACKDROP',a)||'' }};
+}};
+C['looks_nextbackdrop'] = { t: 'scratch_next_costume', m: function(){ return {}; }};
+C['looks_size'] = { t: 'scratch_costume_number', m: function(){ return {}; }};
+// Graphic effects — no direct FNE equivalent
+C['looks_changeeffectby'] = null;
+C['looks_seteffectto'] = null;
+C['looks_cleargraphiceffects'] = null;
+C['looks_backdropnumbername'] = null;
+
+// ──────── SOUND ────────
+C['sound_play'] = { t: 'scratch_play_sound', m: function(sb,a){
+  return { f:{ SOUND: menu(sb,'SOUND_MENU','SOUND_MENU',a)||'meow' }};
+}};
+C['sound_playuntildone'] = { t: 'scratch_play_sound_until_done', m: function(sb,a){
+  return { f:{ SOUND: menu(sb,'SOUND_MENU','SOUND_MENU',a)||'meow' }};
+}};
+C['sound_stopallsounds'] = { t: 'scratch_stop_sounds', m: function(){ return {}; }};
+C['sound_changevolumeby'] = { t: 'scratch_change_volume', m: function(sb,a,c){ return { i:{ VOL: numInput(sb,'VOLUME',a,c) }}; }};
+C['sound_setvolumeto'] = { t: 'scratch_set_volume', m: function(sb,a,c){ return { i:{ VOL: numInput(sb,'VOLUME',a,c) }}; }};
+C['sound_volume'] = null; // reporter — no direct match
+C['sound_changeeffectby'] = null;
+C['sound_seteffectto'] = null;
+C['sound_cleareffects'] = null;
+
+// ──────── EVENTS ────────
+C['event_whenflagclicked'] = { t: 'scratch_when_flag', m: function(){ return {}; }};
+C['event_whenkeypressed'] = { t: 'scratch_when_key', m: function(sb){
+  var k = sf(sb,'KEY_OPTION')||'space'; return { f:{ KEY: KEY_MAP[k]||k }};
+}};
+C['event_whenthisspriteclicked'] = { t: 'scratch_when_clicked', m: function(){ return {}; }};
+C['event_whenbroadcastreceived'] = { t: 'scratch_when_receive', m: function(sb){
+  return { f:{ MSG: sf(sb,'BROADCAST_OPTION')||'message1' }};
+}};
+C['event_broadcast'] = { t: 'scratch_broadcast', m: function(sb,a){
+  var inp = (sb.inputs||{})['BROADCAST_INPUT'];
+  var msg = 'message1';
+  if (inp) { var ar=Array.isArray(inp)?inp:[1,inp]; var v=ar[1];
+    if (Array.isArray(v)) msg=String(v[1]||'message1');
+    else if (typeof v==='string'&&a[v]) msg=sf(a[v],'BROADCAST_OPTION')||'message1';
+  }
+  return { f:{ MSG: msg }};
+}};
+C['event_broadcastandwait'] = { t: 'scratch_broadcast_wait', m: function(sb,a){
+  var inp = (sb.inputs||{})['BROADCAST_INPUT'];
+  var msg = 'message1';
+  if (inp) { var ar=Array.isArray(inp)?inp:[1,inp]; var v=ar[1];
+    if (Array.isArray(v)) msg=String(v[1]||'message1');
+    else if (typeof v==='string'&&a[v]) msg=sf(a[v],'BROADCAST_OPTION')||'message1';
+  }
+  return { f:{ MSG: msg }};
+}};
+C['event_whenbackdropswitchesto'] = null;
+C['event_whengreaterthan'] = null;
+C['event_whenstageclicked'] = { t: 'scratch_when_clicked', m: function(){ return {}; }};
+
+// ──────── CONTROL ────────
+C['control_wait'] = { t: 'scratch_wait', m: function(sb,a,c){ return { i:{ SECS: numInput(sb,'DURATION',a,c) }}; }};
+C['control_repeat'] = { t: 'scratch_repeat', m: function(sb,a,c){
+  return { i: clean({ TIMES: numInput(sb,'TIMES',a,c), DO: substackInput(sb,'SUBSTACK',a,c) }) };
+}};
+C['control_forever'] = { t: 'scratch_forever', m: function(sb,a,c){
+  return { i: clean({ DO: substackInput(sb,'SUBSTACK',a,c) }) };
+}};
+C['control_if'] = { t: 'scratch_if', m: function(sb,a,c){
+  return { i: clean({ COND: boolInput(sb,'CONDITION',a,c), DO: substackInput(sb,'SUBSTACK',a,c) }) };
+}};
+C['control_if_else'] = { t: 'scratch_if_else', m: function(sb,a,c){
+  return { i: clean({ COND: boolInput(sb,'CONDITION',a,c), DO: substackInput(sb,'SUBSTACK',a,c), ELSE: substackInput(sb,'SUBSTACK2',a,c) }) };
+}};
+C['control_repeat_until'] = { t: 'scratch_repeat_until', m: function(sb,a,c){
+  return { i: clean({ COND: boolInput(sb,'CONDITION',a,c), DO: substackInput(sb,'SUBSTACK',a,c) }) };
+}};
+C['control_wait_until'] = { t: 'scratch_wait_until', m: function(sb,a,c){
+  return { i: clean({ COND: boolInput(sb,'CONDITION',a,c) }) };
+}};
+C['control_stop'] = { t: 'scratch_stop_this', m: function(sb){
+  return { f:{ STOP: sf(sb,'STOP_OPTION')||'all' }};
+}};
+C['control_start_as_clone'] = null;
+C['control_create_clone_of'] = null;
+C['control_delete_this_clone'] = null;
+
+// ──────── SENSING ────────
+C['sensing_touchingobject'] = { t: 'scratch_touching_edge', m: function(){ return {}; }};
+C['sensing_touchingcolor'] = { t: 'scratch_bool_touching_color', m: function(sb,a){
+  return { f:{ COL: literal(sb,'COLOR',a)||'#ff0000' }};
+}};
+C['sensing_keypressed'] = { t: 'scratch_key_pressed', m: function(sb,a){
+  var k = menu(sb,'KEY_OPTION','KEY_OPTION',a)||'space';
+  return { f:{ KEY: KEY_MAP[k]||k }};
+}};
+C['sensing_mousedown'] = { t: 'scratch_mouse_down', m: function(){ return {}; }};
+C['sensing_askandwait'] = { t: 'scratch_ask', m: function(sb,a){
+  return { f:{ Q: literal(sb,'QUESTION',a)||"What's your name?" }};
+}};
+C['sensing_answer'] = { t: 'scratch_answer', m: function(){ return {}; }};
+C['sensing_timer'] = { t: 'scratch_timer', m: function(){ return {}; }};
+C['sensing_resettimer'] = { t: 'scratch_reset_timer', m: function(){ return {}; }};
+C['sensing_mousex'] = { t: 'scratch_mouse_x', m: function(){ return {}; }};
+C['sensing_mousey'] = { t: 'scratch_mouse_y', m: function(){ return {}; }};
+C['sensing_distanceto'] = { t: 'scratch_distance_to', m: function(sb,a){
+  var v = menu(sb,'DISTANCETOMENU','DISTANCETOMENU',a)||'mouse';
+  if (v==='_mouse_') v='mouse';
+  return { f:{ TO: v }};
+}};
+C['sensing_setdragmode'] = { t: 'scratch_set_drag_mode', m: function(sb){
+  var m = sf(sb,'DRAG_MODE')||'draggable';
+  return { f:{ MODE: m==='draggable'?'true':'false' }};
+}};
+C['sensing_loudness'] = { t: 'scratch_is_loud', m: function(){ return {}; }};
+C['sensing_loud'] = { t: 'scratch_is_loud', m: function(){ return {}; }};
+C['sensing_coloristouchingcolor'] = null;
+C['sensing_of'] = null;
+C['sensing_current'] = null;
+C['sensing_dayssince2000'] = null;
+C['sensing_username'] = null;
+
+// ──────── OPERATORS ────────
+C['operator_add'] = { t: 'scratch_add', m: function(sb,a,c){ return { i:{ A: numInput(sb,'NUM1',a,c), B: numInput(sb,'NUM2',a,c) }}; }};
+C['operator_subtract'] = { t: 'scratch_subtract', m: function(sb,a,c){ return { i:{ A: numInput(sb,'NUM1',a,c), B: numInput(sb,'NUM2',a,c) }}; }};
+C['operator_multiply'] = { t: 'scratch_multiply', m: function(sb,a,c){ return { i:{ A: numInput(sb,'NUM1',a,c), B: numInput(sb,'NUM2',a,c) }}; }};
+C['operator_divide'] = { t: 'scratch_divide', m: function(sb,a,c){ return { i:{ A: numInput(sb,'NUM1',a,c), B: numInput(sb,'NUM2',a,c) }}; }};
+C['operator_mod'] = { t: 'scratch_mod', m: function(sb,a,c){ return { i:{ A: numInput(sb,'NUM1',a,c), B: numInput(sb,'NUM2',a,c) }}; }};
+C['operator_round'] = { t: 'scratch_round', m: function(sb,a,c){ return { i:{ NUM: numInput(sb,'NUM',a,c) }}; }};
+C['operator_mathop'] = { t: 'scratch_mathop', m: function(sb,a,c){
+  return { f:{ OP: sf(sb,'OPERATOR')||'abs' }, i:{ NUM: numInput(sb,'NUM',a,c) }};
+}};
+C['operator_random'] = { t: 'scratch_random', m: function(sb,a){
+  var fr = literal(sb,'FROM',a)||'1', to = literal(sb,'TO',a)||'10';
+  return { f:{ FROM: Number(fr)||1, TO: Number(to)||10 }};
+}};
+C['operator_lt'] = { t: 'scratch_less_than', m: function(sb,a,c){ return { i:{ A: numInput(sb,'OPERAND1',a,c), B: numInput(sb,'OPERAND2',a,c) }}; }};
+C['operator_equals'] = { t: 'scratch_equals', m: function(sb,a,c){ return { i:{ A: numInput(sb,'OPERAND1',a,c), B: numInput(sb,'OPERAND2',a,c) }}; }};
+C['operator_gt'] = { t: 'scratch_greater_than', m: function(sb,a,c){ return { i:{ A: numInput(sb,'OPERAND1',a,c), B: numInput(sb,'OPERAND2',a,c) }}; }};
+C['operator_and'] = { t: 'scratch_and', m: function(sb,a,c){ return { i:{ A: boolInput(sb,'OPERAND1',a,c), B: boolInput(sb,'OPERAND2',a,c) }}; }};
+C['operator_or'] = { t: 'scratch_or', m: function(sb,a,c){ return { i:{ A: boolInput(sb,'OPERAND1',a,c), B: boolInput(sb,'OPERAND2',a,c) }}; }};
+C['operator_not'] = { t: 'scratch_not', m: function(sb,a,c){ return { i:{ A: boolInput(sb,'OPERAND',a,c) }}; }};
+C['operator_join'] = { t: 'scratch_join', m: function(sb,a,c){ return { i:{ A: textInput(sb,'STRING1',a,c), B: textInput(sb,'STRING2',a,c) }}; }};
+C['operator_letter_of'] = { t: 'scratch_letter_of', m: function(sb,a){
+  return { f:{ IDX: Number(literal(sb,'LETTER',a))||1, STR: literal(sb,'STRING',a)||'world' }};
+}};
+C['operator_length'] = { t: 'scratch_length', m: function(sb,a){
+  return { f:{ STR: literal(sb,'STRING',a)||'world' }};
+}};
+C['operator_contains'] = null;
+
+// ──────── PEN ────────
+C['pen_clear'] = { t: 'scratch_pen_clear', m: function(){ return {}; }};
+C['pen_penDown'] = { t: 'scratch_pen_down', m: function(){ return {}; }};
+C['pen_penUp'] = { t: 'scratch_pen_up', m: function(){ return {}; }};
+C['pen_stamp'] = { t: 'scratch_stamp', m: function(){ return {}; }};
+C['pen_setPenColorToColor'] = { t: 'scratch_pen_set_color', m: function(sb,a){
+  return { f:{ COL: literal(sb,'COLOR',a)||'#ff0000' }};
+}};
+C['pen_changePenSizeBy'] = { t: 'scratch_pen_change_size', m: function(sb,a,c){ return { i:{ N: numInput(sb,'SIZE',a,c) }}; }};
+C['pen_setPenSizeTo'] = { t: 'scratch_pen_set_size', m: function(sb,a,c){ return { i:{ N: numInput(sb,'SIZE',a,c) }}; }};
+C['pen_changePenHueBy'] = null;
+C['pen_setPenHueToNumber'] = null;
+C['pen_changePenShadeBy'] = null;
+C['pen_setPenShadeToNumber'] = null;
+C['pen_changePenColorParamBy'] = null;
+C['pen_setPenColorParamTo'] = null;
+
+// ──────── VARIABLES ────────
+C['data_variable'] = { t: 'variables_get', m: function(sb,a,c){
+  var v = varField(sb,c); return v ? { f:{ VAR: v }} : {};
+}};
+C['data_setvariableto'] = { t: 'variables_set', m: function(sb,a,c){
+  var v = varField(sb,c);
+  var result = { i:{ VALUE: numInput(sb,'VALUE',a,c) }};
+  if (v) result.f = { VAR: v };
+  return result;
+}};
+C['data_changevariableby'] = { t: 'math_change', m: function(sb,a,c){
+  var v = varField(sb,c);
+  var result = { i:{ DELTA: numInput(sb,'VALUE',a,c) }};
+  if (v) result.f = { VAR: v };
+  return result;
+}};
+C['data_showvariable'] = { t: 'scratch_var_show', m: function(sb,a,c){
+  var v = varField(sb,c); return v ? { f:{ VAR: v }} : {};
+}};
+C['data_hidevariable'] = { t: 'scratch_var_hide', m: function(sb,a,c){
+  var v = varField(sb,c); return v ? { f:{ VAR: v }} : {};
+}};
+
+// ──────── CUSTOM BLOCKS (procedures) → scratch_lib_define / scratch_lib_call ────────
+C['procedures_definition'] = { t: 'scratch_lib_define', m: function(sb,a,c){
+  var protoInp = (sb.inputs||{})['custom_block'];
+  var name = 'my block';
+  if (protoInp) {
+    var arr = Array.isArray(protoInp)?protoInp:[1,protoInp];
+    var ref = arr[1];
+    if (ref && typeof ref==='string' && a[ref] && a[ref].mutation) {
+      var pc = a[ref].mutation.proccode||'';
+      name = pc.replace(/%[sb]/g,'').replace(/\s+/g,' ').trim()||'my block';
+      c.procMap[pc] = name;
+    }
+  }
+  return { f:{ NAME: name }};
+}};
+C['procedures_call'] = { t: 'scratch_lib_call', m: function(sb,a,c){
+  var pc = sb.mutation ? sb.mutation.proccode : '';
+  var name = c.procMap[pc] || pc.replace(/%[sb]/g,'').replace(/\s+/g,' ').trim() || 'my block';
+  return { f:{ NAME: name }};
+}};
+C['procedures_prototype'] = null; // internal to definition
+
+// ──────── LISTS (no FNE equivalent) ────────
+C['data_addtolist']=null; C['data_deleteoflist']=null; C['data_deletealloflist']=null;
+C['data_insertatlist']=null; C['data_replaceitemoflist']=null; C['data_itemoflist']=null;
+C['data_itemnumoflist']=null; C['data_lengthoflist']=null; C['data_listcontainsitem']=null;
+C['data_showlist']=null; C['data_hidelist']=null; C['data_listcontents']=null;
+
+// ──────── MUSIC (no FNE equivalent) ────────
+C['music_playDrumForBeats']=null; C['music_playNoteForBeats']=null;
+C['music_restForBeats']=null; C['music_setTempo']=null;
+C['music_changeTempo']=null; C['music_getTempo']=null;
+C['music_setInstrument']=null; C['music_midiPlayDrumForBeats']=null;
+
+// ──────── VIDEO SENSING (no FNE equivalent) ────────
+C['videoSensing_videoOn']=null; C['videoSensing_videoToggle']=null;
+C['videoSensing_setVideoTransparency']=null; C['videoSensing_whenMotionGreaterThan']=null;
+
+// ──────── TEXT TO SPEECH (no FNE equivalent) ────────
+C['text2speech_speakAndWait']=null; C['text2speech_setVoice']=null;
+C['text2speech_setLanguage']=null;
+
+// ──────── TRANSLATE (no FNE equivalent) ────────
+C['translate_getTranslate']=null; C['translate_getViewerLanguage']=null;
+
+/* =================================================================
+   MAIN BLOCK CONVERSION ENGINE
+   ================================================================= */
+function convertBlock(blockId, allBlocks, ctx) {
+  var sb = allBlocks[blockId];
+  if (!sb || !sb.opcode) return null;
+
+  var conv = C[sb.opcode];
+
+  // Explicitly no equivalent (null) or unknown
+  if (conv === null) {
+    ctx.skipped++;
+    log('  Skip: ' + sb.opcode, 'warn');
+    // Continue chain if possible
+    if (sb.next) return convertBlock(sb.next, allBlocks, ctx);
+    return null;
+  }
+  if (conv === undefined) {
+    ctx.skipped++;
+    log('  Skip: ' + sb.opcode + ' (unknown)', 'warn');
+    if (sb.next) return convertBlock(sb.next, allBlocks, ctx);
+    return null;
+  }
+
+  var result = { type: conv.t, id: uid() };
+  var mapped = conv.m(sb, allBlocks, ctx);
+  ctx.converted++;
+
+  // Fields (f → fields)
+  if (mapped.f) {
+    result.fields = {};
+    for (var k in mapped.f) { if (mapped.f[k] != null) result.fields[k] = mapped.f[k]; }
+    if (!Object.keys(result.fields).length) delete result.fields;
+  }
+
+  // Inputs (i → inputs)
+  if (mapped.i) {
+    result.inputs = {};
+    for (var ik in mapped.i) { if (mapped.i[ik] != null) result.inputs[ik] = mapped.i[ik]; }
+    if (!Object.keys(result.inputs).length) delete result.inputs;
+  }
+
+  // Next block in chain
+  if (sb.next) {
+    var nb = convertBlock(sb.next, allBlocks, ctx);
+    if (nb) result.next = { block: nb };
+  }
+
+  return result;
+}
+
+/* =================================================================
+   TARGET (SPRITE) CONVERSION
+   ================================================================= */
+function convertTargetBlocks(target, ctx) {
+  var allBlocks = target.blocks || {};
+  var workspace = { blocks: { languageVersion: 0, blocks: [] }, variables: [] };
+
+  // Find top-level (hat) blocks
+  var topIds = [];
+  for (var bid in allBlocks) {
+    var blk = allBlocks[bid];
+    if (blk.topLevel && !blk.shadow) topIds.push(bid);
+  }
+
+  var xPos = 20, yPos = 20;
+  for (var i = 0; i < topIds.length; i++) {
+    var converted = convertBlock(topIds[i], allBlocks, ctx);
+    if (converted) {
+      converted.x = xPos;
+      converted.y = yPos;
+      yPos += 120;
+      workspace.blocks.blocks.push(converted);
+    }
+  }
+
+  // Collect variables
+  for (var vid in ctx.varMap) {
+    var v = ctx.varMap[vid];
+    // Avoid duplicates
+    var dup = false;
+    for (var j = 0; j < workspace.variables.length; j++) {
+      if (workspace.variables[j].id === v.id) { dup = true; break; }
+    }
+    if (!dup) workspace.variables.push({ name: v.name, id: v.id });
+  }
+
+  return workspace;
+}
+
+/* =================================================================
+   ASSET HELPERS
+   ================================================================= */
+function blobToDataURL(blob, format) {
+  return new Promise(function(resolve) {
+    var mime = 'image/png';
+    if (format === 'svg') mime = 'image/svg+xml';
+    else if (format === 'jpg' || format === 'jpeg') mime = 'image/jpeg';
+    else if (format === 'gif') mime = 'image/gif';
+    else if (format === 'bmp') mime = 'image/bmp';
+    else if (format === 'wav') mime = 'audio/wav';
+    else if (format === 'mp3') mime = 'audio/mpeg';
+    else if (format === 'webm') mime = 'audio/webm';
+    var newBlob = (blob.type && blob.type !== 'application/octet-stream') ? blob : new Blob([blob], { type: mime });
+    var reader = new FileReader();
+    reader.onloadend = function() { resolve(reader.result); };
+    reader.readAsDataURL(newBlob);
+  });
+}
+
+/* =================================================================
+   MAIN SB3 → FN0 CONVERSION
+   ================================================================= */
+async function convertSB3(arrayBuf) {
+  var zip = await JSZip.loadAsync(arrayBuf);
+  var jsonText = await zip.file('project.json').async('string');
+  var project = JSON.parse(jsonText);
+  log('Parsed project.json', 'ok');
+
+  var targets = project.targets || [];
+  var sprites = [];
+  var totalConverted = 0, totalSkipped = 0;
+
+  for (var t = 0; t < targets.length; t++) {
+    var target = targets[t];
+    var isStage = target.isStage;
+    log((isStage ? '── Stage ──' : '── Sprite: ' + target.name + ' ──'), 'info');
+
+    // ── Costumes ──
+    var costumes = [];
+    for (var ci = 0; ci < (target.costumes || []).length; ci++) {
+      var cos = target.costumes[ci];
+      var assetFile = cos.md5ext || (cos.assetId + '.' + cos.dataFormat);
+      var entry = zip.file(assetFile);
+      if (entry) {
+        var blob = await entry.async('blob');
+        var dataURL = await blobToDataURL(blob, cos.dataFormat);
+        costumes.push({ name: cos.name, dataURL: dataURL });
+        log('  Costume: ' + cos.name, 'ok');
+      } else {
+        log('  Missing costume: ' + assetFile, 'warn');
+        costumes.push({ name: cos.name, dataURL: '' });
+      }
+    }
+
+    // ── Sounds ──
+    var sounds = [];
+    for (var si = 0; si < (target.sounds || []).length; si++) {
+      var snd = target.sounds[si];
+      var sFile = snd.md5ext || (snd.assetId + '.' + snd.dataFormat);
+      var sEntry = zip.file(sFile);
+      if (sEntry) {
+        var sBlob = await sEntry.async('blob');
+        var sDataURL = await blobToDataURL(sBlob, snd.dataFormat);
+        sounds.push({ name: snd.name, dataURL: sDataURL });
+        log('  Sound: ' + snd.name, 'ok');
+      } else {
+        log('  Missing sound: ' + sFile, 'warn');
+        sounds.push({ name: snd.name, dataURL: '' });
+      }
+    }
+
+    // ── Variables: pre-register from target.variables ──
+    var ctx = { varMap: {}, varCount: 0, procMap: {}, converted: 0, skipped: 0 };
+    for (var vid in (target.variables || {})) {
+      var vArr = target.variables[vid];
+      ctx.varMap[vid] = { name: vArr[0], id: 'var_' + (++ctx.varCount) };
+    }
+
+    // ── Convert blocks ──
+    var blocklyWS = convertTargetBlocks(target, ctx);
+    totalConverted += ctx.converted;
+    totalSkipped += ctx.skipped;
+    log('  Blocks: ' + ctx.converted + ' converted, ' + ctx.skipped + ' skipped', ctx.skipped ? 'warn' : 'ok');
+
+    // ── Build FNE sprite ──
+    sprites.push({
+      name: isStage ? 'Stage' : target.name,
+      imgPath: null,
+      x: target.x || 0,
+      y: target.y || 0,
+      z: target.layerOrder || 0,
+      dir: target.direction || 90,
+      size: target.size || 100,
+      visible: target.visible !== false,
+      isStatic: false,
+      gravity: 0,
+      vx: 0,
+      vy: 0,
+      objectType: 'sprite',
+      objectShape: null,
+      costumes: costumes,
+      sounds: sounds,
+      currentCostume: target.currentCostume || 0,
+      scaleX: 100,
+      scaleY: 100,
+      scaleZ: 100,
+      draggable: target.draggable || false,
+      collideable: true,
+      isBackground: isStage,
+      blocks: blocklyWS
+    });
+  }
+
+  log('', '');
+  log('Total: ' + totalConverted + ' blocks converted, ' + totalSkipped + ' skipped', 'info');
+  return { camera: { x: 0, y: 0 }, sprites: sprites };
+}
+
+/* =================================================================
+   FILE HANDLING & UI
+   ================================================================= */
+var _fn0Result = null;
+var _fn0Filename = 'project.fn0';
+
+async function handleFile(file) {
+  logEl.innerHTML = '';
+  logEl.style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+  _fn0Result = null;
+  _uid = 0;
+
+  var ext = file.name.split('.').pop().toLowerCase();
+  if (ext !== 'sb3') {
+    log('Only .sb3 files are supported.', 'err');
+    return;
+  }
+
+  _fn0Filename = file.name.replace(/\.sb3$/i, '') + '.fn0';
+  log('File: ' + file.name + '  (' + (file.size / 1024).toFixed(1) + ' KB)', 'info');
+  log('', '');
+
+  try {
+    var arrayBuf = await file.arrayBuffer();
+    var fn0 = await convertSB3(arrayBuf);
+    _fn0Result = fn0;
+
+    // Stats
+    var sc = fn0.sprites.length, cc = 0, sndc = 0, bc = 0;
+    for (var i = 0; i < fn0.sprites.length; i++) {
+      cc += fn0.sprites[i].costumes.length;
+      sndc += fn0.sprites[i].sounds.length;
+      var ws = fn0.sprites[i].blocks;
+      if (ws && ws.blocks) {
+        for (var j = 0; j < ws.blocks.blocks.length; j++) bc += countChain(ws.blocks.blocks[j]);
+      }
+    }
+
+    log('', '');
+    log('=== Done! ===', 'ok');
+    log(sc + ' sprites, ' + cc + ' costumes, ' + sndc + ' sounds, ' + bc + ' blocks', 'ok');
+
+    document.getElementById('result').style.display = 'block';
+    document.getElementById('stats').textContent = sc + ' sprites, ' + cc + ' costumes, ' + sndc + ' sounds, ' + bc + ' blocks';
+  } catch (err) {
+    log('Error: ' + err.message, 'err');
+    console.error(err);
+  }
+}
+
+function countChain(b) {
+  if (!b) return 0;
+  var c = 1;
+  if (b.next) c += countChain(b.next.block);
+  if (b.inputs) for (var k in b.inputs) { if (b.inputs[k] && b.inputs[k].block) c += countChain(b.inputs[k].block); }
+  return c;
+}
+
+function downloadFN0() {
+  if (!_fn0Result) return;
+  var json = JSON.stringify(_fn0Result, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = _fn0Filename;
+  a.click();
+  URL.revokeObjectURL(url);
+  log('Downloaded: ' + _fn0Filename, 'ok');
+}
+
+// ── Event handlers ──
+var dropZone = document.getElementById('dropZone');
+var fileInput = document.getElementById('fileInput');
+dropZone.addEventListener('click', function() { fileInput.click(); });
+fileInput.addEventListener('change', function(e) { if (e.target.files.length) handleFile(e.target.files[0]); });
+dropZone.addEventListener('dragover', function(e) { e.preventDefault(); dropZone.classList.add('drag-over'); });
+dropZone.addEventListener('dragleave', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); });
+dropZone.addEventListener('drop', function(e) { e.preventDefault(); dropZone.classList.remove('drag-over'); if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]); });
+document.getElementById('downloadBtn').addEventListener('click', downloadFN0);
+</script>
+</body>
+</html>

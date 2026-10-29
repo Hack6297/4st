@@ -11,7 +11,7 @@
   <link rel="stylesheet" href="https://unpkg.com/7.css/dist/7.scoped.css">
   <link rel="stylesheet" href="./styles.css">
 </head>
-<body data-wallpaper="./imageres/home_page_bg.jpg">
+<body data-wallpaper="./imageres/wallpapers/pumpkin-dry-grass.jpg">
   <main class="start-menu">
     <header class="start-menu__bar">
       <img src="./imageres/dark_aero_bar.svg" alt="" class="start-menu__bar-image" aria-hidden="true">
@@ -159,11 +159,31 @@
 
     <section class="built-in-stage" id="built-in-stage" aria-label="Built-in Apps" hidden>
       <h2 class="tile-group__title">Built-in Apps</h2>
-      <div class="tile-group__grid">
-        <a class="start-tile start-tile--large tile-color-sky" href="./Built-in%20apps/Joseph's%20Fun%20schoolhouse/Josephs_Basics.html" target="_blank" rel="noopener" aria-label="Open Joseph's Fun Schoolhouse">
+      <div class="tile-group__grid built-in-stage__grid" data-grid-id="built-in-apps">
+        <a class="start-tile start-tile--large tile-color-sky" data-tile-id="joseph-schoolhouse" href="https://joseph-fun-schoolhouse.pages.dev/Josephs_Basics.html" target="_blank" rel="noopener" aria-label="Open Joseph's Fun Schoolhouse">
           <img src="./icons/joseph-basics.png" alt="" class="start-tile__app-icon built-in-app-icon">
           <span class="start-tile__title">Joseph's Fun Schoolhouse</span>
           <span class="start-tile__description">Explore a curious schoolhouse, take on lessons, and discover what waits around each corner.</span>
+        </a>
+        <a class="start-tile start-tile--wide tile-color-light-aqua" data-tile-id="netsite-alpha" href="https://4studios-built-in-apps.pages.dev/NetSite%20Alpha%201/index.html" target="_blank" rel="noopener" aria-label="Open NetSite Alpha 1">
+          <span class="built-in-tile__badge" aria-hidden="true">NS</span>
+          <span class="start-tile__title">NetSite Alpha 1</span>
+          <span class="start-tile__description">Build websites with blocks.</span>
+        </a>
+        <a class="start-tile tile-color-aqua" data-tile-id="nesat-2000" href="https://4studios-built-in-apps.pages.dev/NesaT%202000/index.html" target="_blank" rel="noopener" aria-label="Open NesaT 2000">
+          <span class="built-in-tile__badge" aria-hidden="true">N</span>
+          <span class="start-tile__title">NesaT 2000</span>
+          <span class="start-tile__description">A classic search page.</span>
+        </a>
+        <a class="start-tile start-tile--wide tile-color-sky" data-tile-id="toyblocks-1999" href="https://4studios-built-in-apps.pages.dev/Toyblocks%203D%201999/index.html" target="_blank" rel="noopener" aria-label="Open Toyblocks 3D prototype">
+          <span class="built-in-tile__badge" aria-hidden="true">TB</span>
+          <span class="start-tile__title">Toyblocks 3D</span>
+          <span class="start-tile__description">The 1999 prototype.</span>
+        </a>
+        <a class="start-tile start-tile--large tile-color-light-aqua" data-tile-id="minecraft-nesa-alpha" href="https://4studios-built-in-apps.pages.dev/Minecraft%20Nesa%20Edition%200.1%20Alpha/index.html" target="_blank" rel="noopener" aria-label="Open Minecraft Nesa Edition 0.1 Alpha">
+          <span class="built-in-tile__badge" aria-hidden="true">M</span>
+          <span class="start-tile__title">Minecraft Nesa Edition</span>
+          <span class="start-tile__description">0.1 Alpha</span>
         </a>
       </div>
     </section>
@@ -174,7 +194,7 @@
         <div class="win7 customize-panel__win7">
           <label class="customize-panel__label" for="wallpaper-select">Choose the wallpaper</label>
           <select class="customize-panel__select" id="wallpaper-select">
-            <option value="./imageres/home_page_bg.jpg">Default wallpaper</option>
+            <option value="./imageres/wallpapers/pumpkin-dry-grass.jpg">Pumpkin patch with dry grass</option>
           </select>
         </div>
         <div class="customize-panel__browser">

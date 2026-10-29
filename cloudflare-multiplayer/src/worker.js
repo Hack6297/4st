@@ -2,7 +2,7 @@ const COLORS = ["#ff4040", "#43a8ff", "#43e06f", "#ffe044", "#d65cff", "#ff923d"
 const FEATURED_JOSEPH_STORY = {
   source: "4STUDIOS",
   title: "Joseph's Fun Schoolhouse is now playable online",
-  link: "https://www.4studios.club/Built-in%20apps/Joseph%27s%20Fun%20schoolhouse/Josephs_Basics.html",
+  link: "https://joseph-fun-schoolhouse.pages.dev/Josephs_Basics.html",
   image: "https://www.4studios.club/imageres/joseph-splash.svg",
 };
 

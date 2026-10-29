@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="theme-color" content="#000000">
+  <meta name="description" content="Toyblocks 3D — December 1999 prototype.">
+  <title>Toyblocks 3D</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='32' height='32'%3E%3Crect width='32' height='32' fill='%23006eff'/%3E%3Cpath d='M5 9h22v18H5z' fill='%23ccc' stroke='%23000' stroke-width='3'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="game" aria-label="Toyblocks 3D prototype">
+    <aside class="side-panel side-panel-left" aria-hidden="true"></aside>
+    <aside class="side-panel side-panel-right" aria-hidden="true"></aside>
+
+    <section class="editor" aria-label="Toyblocks 3D editor">
+      <div id="scene" class="scene" tabindex="0" role="application" aria-label="3D scene. Left click to place, right click to delete. Use W A S D to move, Q and E to fly, arrow keys to look, and F for fullscreen."></div>
+
+      <div class="topbar">
+        <div class="select-readout" aria-live="polite">
+          <img src="UI/select_title.png" alt="">
+          <span>SELECT: <strong id="selectedName">CUBE</strong></span>
+        </div>
+        <button class="transport" type="button" aria-label="Play (not available)" aria-disabled="true">
+          <img src="UI/btn_play.png" alt="">
+        </button>
+        <button class="transport" type="button" aria-label="Stop (not available)" aria-disabled="true">
+          <img src="UI/btn_stop.png" alt="">
+        </button>
+      </div>
+
+      <div class="toolstrip" role="group" aria-label="Select object">
+        <button class="tool selected" type="button" data-shape="cube" aria-label="Cube" aria-pressed="true">
+          <img src="UI/btn_cube.png" alt="">
+        </button>
+        <button class="tool" type="button" data-shape="sphere" aria-label="Sphere" aria-pressed="false">
+          <img src="UI/btn_sphere.png" alt="">
+        </button>
+        <button class="tool" type="button" data-shape="platform" aria-label="Platform" aria-pressed="false">
+          <img src="UI/btn_platform.png" alt="">
+        </button>
+      </div>
+    </section>
+  </main>
+
+  <script src="vendor/three.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

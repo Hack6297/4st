@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSite - Share Your Creations</title>
+<style>
+/* ═══════════════════════════════════════════════════════════════
+   Scratch 2.0 Community Page Styles
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ─── RESET ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+@font-face {
+  font-family: 'Black Boys on Mopeds';
+  src: local('Black Boys on Mopeds'), local('BlackBoysOnMopeds');
+}
+
+body {
+  font-family: "Lucida Grande", Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  background: #e6e8eb;
+  color: #322f37;
+  min-height: 100vh;
+}
+
+/* ─── Thin modern scrollbars ─── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.18); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(0,0,0,0.3); }
+
+/* ═════════════════ NAV BAR (matches editor menubar) ═════════════════ */
+#topbar {
+  height: 34px;
+  background: linear-gradient(180deg, #7fc0e8 0%, #4a90d9 40%, #2d6eb5 70%, #1a5294 100%);
+  border-bottom: 2px solid #0e3d6b;
+  border-top: 1px solid #a0d4f5;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.25);
+}
+#topbar .logo {
+  font-family: 'Black Boys on Mopeds', Arial, sans-serif;
+  font-size: 16px;
+  font-weight: bold;
+  color: #fff;
+  margin-right: 18px;
+  text-decoration: none;
+  cursor: pointer;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+  letter-spacing: 0.5px;
+}
+#topbar .nav-links {
+  display: flex;
+  gap: 0;
+  align-items: center;
+}
+#topbar .nav-link {
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 4px 12px;
+  border-radius: 3px;
+  text-decoration: none;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#topbar .nav-link:hover {
+  background: rgba(255,255,255,0.25);
+}
+#topbar .nav-link.active {
+  background: rgba(255,255,255,0.25);
+}
+#topbar .spacer { flex: 1; }
+#topbar .upload-btn {
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%);
+  color: #fff;
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 14px;
+  border: 2px solid #2a6f2a;
+  border-radius: 6px;
+  cursor: pointer;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 0 #2a6f2a, inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: background 0.1s;
+  text-decoration: none;
+}
+#topbar .upload-btn:hover {
+  background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%);
+}
+#topbar .upload-btn:active {
+  background: linear-gradient(180deg, #4a9a4a 0%, #357a35 100%);
+  box-shadow: 0 1px 0 #2a6f2a, inset 0 1px 0 rgba(255,255,255,0.25);
+  transform: translateY(1px);
+}
+
+/* ═════════════════ HERO BANNER (Scratch 2.0 — light blue) ═════════════════ */
+#hero {
+  background: linear-gradient(135deg, #00aaff 0%, #6cc7ff 100%);
+  color: #fff;
+  padding: 36px 40px;
+  display: flex;
+  align-items: center;
+  gap: 40px;
+  max-width: 100%;
+  overflow: hidden;
+}
+#hero .hero-img {
+  width: 380px;
+  height: auto;
+  flex-shrink: 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+#hero .hero-text {
+  flex: 1;
+  text-align: left;
+}
+#hero h1 {
+  font-family: 'Black Boys on Mopeds', Verdana, sans-serif;
+  font-size: 34px;
+  text-shadow: 0 2px 5px rgba(0,0,0,0.3);
+  margin-bottom: 12px;
+}
+#hero p {
+  font-size: 14px;
+  opacity: 0.9;
+  max-width: 500px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+#hero .hero-btn {
+  display: inline-block;
+  margin-top: 16px;
+  padding: 8px 22px;
+  background: linear-gradient(180deg, #ffab19 0%, #e89800 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  border: 2px solid #c07e00;
+  border-radius: 6px;
+  cursor: pointer;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 2px 0 #c07e00, inset 0 1px 0 rgba(255,255,255,0.25);
+  transition: background 0.1s;
+  text-decoration: none;
+}
+#hero .hero-btn:hover {
+  background: linear-gradient(180deg, #ffc140 0%, #f0a810 100%);
+}
+#hero .hero-btn:active {
+  transform: translateY(1px);
+  box-shadow: 0 1px 0 #c07e00, inset 0 1px 0 rgba(255,255,255,0.25);
+}
+
+/* ═════════════════ MAIN CONTENT ═════════════════ */
+.content-wrap {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+/* ─── SECTION HEADERS (Scratch 2.0 style) ─── */
+.section-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  margin-top: 8px;
+  gap: 10px;
+}
+.section-header h2 {
+  font-size: 15px;
+  font-weight: bold;
+  color: #333;
+}
+.section-header .see-all {
+  margin-left: auto;
+  color: #4d97ff;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: none;
+}
+.section-header .see-all:hover { text-decoration: underline; }
+
+/* ═════════════════ PROJECT GRID (2 columns, Scratch 1.0) ═════════════════ */
+.project-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 28px;
+}
+.project-card {
+  background: #fff;
+  border: 1px solid #c8c8c8;
+  border-radius: 5px;
+  overflow: hidden;
+  cursor: pointer;
+  transition: box-shadow 0.15s, transform 0.1s;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+}
+.project-card:hover {
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transform: translateY(-2px);
+}
+.project-card .card-thumb {
+  width: 100%;
+  height: 140px;
+  background: linear-gradient(135deg, #f0f0f0 0%, #e0e0e0 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+.project-card .card-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.project-card .card-thumb .card-play {
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  background: rgba(0,0,0,0.5);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+.project-card:hover .card-play { opacity: 1; }
+.card-play::after {
+  content: "";
+  width: 0;
+  height: 0;
+  border-left: 18px solid #fff;
+  border-top: 11px solid transparent;
+  border-bottom: 11px solid transparent;
+  margin-left: 4px;
+}
+.project-card .card-info {
+  padding: 8px 10px;
+}
+.project-card .card-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #333;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.project-card .card-author {
+  font-size: 10px;
+  color: #888;
+  margin-top: 2px;
+}
+.project-card .card-meta {
+  display: flex;
+  gap: 10px;
+  margin-top: 3px;
+  font-size: 10px;
+  color: #999;
+}
+
+/* ═════════════════ UPLOAD MODAL ═════════════════ */
+#upload-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+#upload-overlay.open { display: flex; }
+#upload-box {
+  background: #fff;
+  border-radius: 8px;
+  width: 490px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.4);
+}
+#upload-box .upload-header {
+  background: linear-gradient(180deg, #4a90d9 0%, #2d6eb5 100%);
+  color: #fff;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-weight: bold;
+  border-radius: 8px 8px 0 0;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+#upload-box .upload-body {
+  padding: 20px;
+}
+#upload-box .upload-body label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #555;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+#upload-box .upload-body label:first-child { margin-top: 0; }
+#upload-box .upload-body input[type="text"],
+#upload-box .upload-body textarea {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 12px;
+  border: 2px inset #c0c0c0;
+  border-radius: 3px;
+  font-family: Verdana, sans-serif;
+  resize: vertical;
+}
+#upload-box .upload-body textarea { min-height: 60px; }
+#upload-box .upload-body input[type="file"] { margin-top: 4px; }
+.upload-file-zone {
+  border: 2px dashed #4c97ff;
+  border-radius: 6px;
+  padding: 24px;
+  text-align: center;
+  color: #4c97ff;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  margin-bottom: 4px;
+  transition: background 0.15s;
+}
+.upload-file-zone:hover { background: #f0f6ff; }
+.upload-file-zone .file-name { font-weight: normal; color: #333; margin-top: 6px; font-size: 11px; }
+.upload-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 14px 20px;
+  border-top: 1px solid #ddd;
+}
+
+/* ═════════════════ SCRATCH 2.0 CLAY BUTTONS ═════════════════ */
+.clay-btn {
+  padding: 8px 20px;
+  border: 2px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%);
+  color: #333;
+  font-weight: bold;
+  font-size: 12px;
+  font-family: Verdana, sans-serif;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #aaa, 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  transition: transform 0.05s, box-shadow 0.05s;
+  position: relative;
+}
+.clay-btn:hover { background: linear-gradient(180deg, #f0f0f0 0%, #d4d4d4 100%); }
+.clay-btn:active { transform: translateY(2px); box-shadow: 0 1px 0 #aaa; }
+.clay-btn.green {
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%);
+  border-color: #2a6f2a;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 0 #2a6f2a, 0 4px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.clay-btn.green:hover { background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%); }
+.clay-btn.green:active { box-shadow: 0 1px 0 #2a6f2a; }
+.clay-btn.green:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+.btn-cancel {
+  padding: 8px 20px;
+  border: 2px solid rgba(0,0,0,0.25);
+  border-radius: 6px;
+  background: linear-gradient(180deg, #e8e8e8 0%, #c8c8c8 100%);
+  color: #555;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #aaa, 0 4px 8px rgba(0,0,0,0.15), inset 0 1px 0 rgba(255,255,255,0.5);
+  text-shadow: 0 1px 0 rgba(255,255,255,0.5);
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+.btn-cancel:hover { background: linear-gradient(180deg, #f0f0f0 0%, #d4d4d4 100%); }
+.btn-cancel:active { transform: translateY(2px); box-shadow: 0 1px 0 #aaa; }
+
+.btn-publish {
+  padding: 8px 24px;
+  border: 2px solid #2a6f2a;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #2a6f2a, 0 4px 8px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.25);
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  transition: transform 0.05s, box-shadow 0.05s;
+}
+.btn-publish:hover { background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%); }
+.btn-publish:active { transform: translateY(2px); box-shadow: 0 1px 0 #2a6f2a; }
+.btn-publish:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ─── Thumbnail preview ─── */
+.thumb-preview {
+  margin-top: 6px;
+  max-width: 200px;
+  max-height: 150px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  display: none;
+}
+
+/* ═════════════════ FOOTER (Scratch 1.4 dark) ═════════════════ */
+#footer {
+  background: #333;
+  color: #999;
+  text-align: center;
+  padding: 20px;
+  font-size: 11px;
+  margin-top: 40px;
+}
+#footer a { color: #8ab4f8; text-decoration: none; }
+#footer a:hover { text-decoration: underline; }
+
+/* ─── LOADING SPINNER ─── */
+.spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid #bbb;
+  border-top-color: #4c97ff;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  vertical-align: middle;
+  margin-right: 6px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.empty-state {
+  text-align: center;
+  padding: 40px;
+  color: #999;
+  font-size: 13px;
+  grid-column: 1 / -1;
+}
+
+/* ─── user menu dropdown ─── */
+.um-opt {
+  padding: 4px 20px;
+  cursor: pointer;
+  font-size: 11px;
+  color: #111;
+}
+.um-opt:hover {
+  background: linear-gradient(180deg, #d4e8ff 0%, #a8c8ee 100%);
+  color: #000;
+}
+
+/* ═════════════════ AUTH MODALS (Scratch 1.4 clay style) ═════════════════ */
+.auth-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  z-index: 2000;
+  align-items: center;
+  justify-content: center;
+}
+.auth-overlay.open { display: flex; }
+.auth-window {
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+  border: 3px outset #e0e0e0;
+  border-radius: 8px;
+  width: 380px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,0,0,0.45);
+}
+.auth-titlebar {
+  background: linear-gradient(180deg, #4a90d9 0%, #2d6eb5 100%);
+  color: #fff;
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+}
+.auth-close {
+  background: none;
+  border: none;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+}
+.auth-close:hover { opacity: 0.7; }
+.auth-body {
+  padding: 16px 20px;
+}
+.auth-body label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 4px;
+  margin-top: 10px;
+}
+.auth-body input, .auth-body select {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 2px inset #c0c0c0;
+  border-radius: 3px;
+  font-family: Verdana, sans-serif;
+}
+.auth-date-row {
+  display: flex;
+  gap: 8px;
+}
+.auth-date-row select { width: 50%; }
+.auth-next {
+  display: block;
+  margin-top: 14px;
+  width: 100%;
+  padding: 8px;
+  font-size: 13px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.auth-next.green {
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%);
+  border: 2px solid #2a6f2a;
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  box-shadow: 0 3px 0 #2a6f2a, inset 0 1px 0 rgba(255,255,255,0.25);
+}
+.auth-next.green:hover { background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%); }
+/* NetSite classic 2008 skin */
+html { background: #fff; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #333; background: #fff; }
+a { color: #03c; }
+#topbar {
+  position: static; width: 960px; height: auto; min-height: 98px; margin: 0 auto; padding: 8px 0 0;
+  display: grid; grid-template-columns: 230px 1fr 260px; grid-template-rows: 54px 35px;
+  align-items: center; background: #fff; border: 0; box-shadow: none;
+}
+#topbar .logo {
+  grid-column: 1; grid-row: 1; display: block; width: 210px; margin: 0; color: #111;
+  font: bold 31px/1 Arial, Helvetica, sans-serif; letter-spacing: -2px; text-shadow: none;
+}
+#topbar .logo::before { content: none; }
+#topbar .logo::after {
+  content: none; display: none; margin-left: 2px; padding: 4px 7px 5px; color: #fff;
+  font-size: 29px; letter-spacing: -2px; background: linear-gradient(#e72b2b, #a90000);
+  border: 1px solid #8e0000; border-radius: 7px; box-shadow: inset 0 1px 0 rgba(255,255,255,.55);
+}
+#topbar .logo img {
+  display: block;
+  width: auto;
+  height: 34px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 6px 5px rgba(0,0,0,.65));
+}
+.classic-tagline { display: block; margin: 2px 0 0 69px; color: #777; font: normal 10px Arial, sans-serif; letter-spacing: 0; }
+.classic-search { grid-column: 2; grid-row: 1; display: flex; align-items: center; padding-right: 16px; }
+.classic-search input { width: 100%; height: 25px; padding: 3px 5px; border: 1px solid #999; font: 13px Arial, sans-serif; }
+.classic-search button, #topbar .upload-btn {
+  height: 25px; padding: 2px 12px; color: #111; font: bold 11px Arial, sans-serif; white-space: nowrap;
+  background: linear-gradient(#fff, #d8d8d8); border: 1px solid #999; border-radius: 2px; box-shadow: none; text-shadow: none;
+}
+.classic-search button { margin-left: 4px; }
+.classic-search button:hover, #topbar .upload-btn:hover { background: linear-gradient(#fff, #c9d8ed); }
+#topbar > .spacer { display: none; }
+#topbar > .nav-links {
+  grid-column: 1 / 4; grid-row: 2; align-self: stretch; display: flex; align-items: flex-end; padding: 0 8px;
+  background: linear-gradient(#5b83b4, #315e96); border: 1px solid #214c81; border-radius: 5px 5px 0 0;
+}
+#topbar .nav-link { height: 30px; padding: 8px 16px 6px; color: #fff; font: bold 12px Arial, sans-serif; text-shadow: 0 1px #23466e; border-radius: 0; }
+#topbar .nav-link:hover { background: #244d7c; }
+#topbar .nav-link.active { color: #333; background: #fff; border: 1px solid #214c81; border-bottom: 0; text-shadow: none; }
+.account-tools { grid-column: 3; grid-row: 1; justify-self: end; text-align: right; }
+.account-links { margin-bottom: 7px; color: #777; }
+.account-links button { padding: 0; color: #03c; background: none; border: 0; font: 11px Arial, sans-serif; cursor: pointer; }
+.account-links button:hover { text-decoration: underline; }
+#auth-buttons { display: inline-flex !important; margin: 0 !important; }
+#user-area { grid-column: 3; grid-row: 1; justify-self: end; }
+#hero {
+  width: 960px; max-width: none; margin: 12px auto 10px; padding: 0; display: grid; grid-template-columns: 625px 325px;
+  gap: 10px; color: #333; background: #fff; overflow: visible;
+}
+#hero .hero-feature { display: grid; grid-template-columns: 330px 1fr; gap: 12px; min-height: 210px; padding: 9px; background: #eee; border: 1px solid #aaa; }
+#hero .hero-img { width: 330px; height: 190px; object-fit: cover; border: 1px solid #777; border-radius: 0; box-shadow: none; }
+#hero .hero-text { padding: 2px 4px; }
+#hero h1 { margin: 0 0 8px; color: #03c; font: bold 17px Arial, sans-serif; text-shadow: none; }
+#hero p { color: #444; font-size: 12px; line-height: 1.4; text-shadow: none; }
+#hero .hero-btn {
+  margin-top: 14px; padding: 5px 12px; color: #111; font-size: 12px; background: linear-gradient(#fff, #d5d5d5);
+  border: 1px solid #888; border-radius: 2px; box-shadow: none; text-shadow: none;
+}
+#hero .hero-btn:hover { background: linear-gradient(#fff, #c8d7ec); }
+.join-box { border: 1px solid #9fb4ca; background: #e7f0f8; }
+.join-box h2 { padding: 7px 9px; color: #fff; font-size: 15px; background: linear-gradient(#6d91b8, #416b98); border-bottom: 1px solid #31577e; }
+.join-box-body { padding: 13px 15px; }
+.join-box-body strong { display: block; margin-bottom: 8px; font-size: 14px; }
+.join-box ul { margin: 9px 0 13px 18px; line-height: 1.65; }
+.join-now { width: 100%; padding: 7px; color: #111; font-weight: bold; background: linear-gradient(#fff8b9, #f0d452); border: 1px solid #b69c20; border-radius: 3px; cursor: pointer; }
+.content-wrap { width: 960px; max-width: none; margin: 0 auto; padding: 0; }
+.section-header { min-height: 29px; margin: 11px 0 8px; padding: 5px 8px; background: linear-gradient(#f7f7f7, #ddd); border: 1px solid #aaa; }
+.section-header h2 { color: #333; font-size: 14px; }
+.project-grid { grid-template-columns: repeat(4, 1fr); gap: 13px; margin-bottom: 18px; }
+.project-card { border: 0; border-radius: 0; box-shadow: none; overflow: visible; }
+.project-card:hover { transform: none; box-shadow: none; }
+.project-card .card-thumb { height: 118px; background: #eee; border: 1px solid #999; }
+.project-card .card-thumb .card-play { right: 5px; bottom: 5px; width: 26px; height: 21px; border-radius: 2px; opacity: .8; }
+.card-play::after { border-left-width: 9px; border-top-width: 6px; border-bottom-width: 6px; }
+.project-card .card-info { padding: 5px 1px; }
+.project-card .card-title { color: #03c; font-size: 12px; text-decoration: underline; }
+.project-card .card-author { color: #666; }
+.project-card .card-meta { color: #777; }
+#footer { width: 960px; margin: 24px auto 0; padding: 14px 0 24px; color: #666; background: #fff; border-top: 1px solid #ccc; text-align: center; }
+.upload-header, .auth-titlebar { background: linear-gradient(#6d91b8, #416b98); }
+.btn-publish, .auth-next.green { background: linear-gradient(#fff8b9, #f0d452); color: #111; border-color: #b69c20; text-shadow: none; }
+@media (max-width: 980px) {
+  #topbar, #hero, .content-wrap, #footer { width: calc(100% - 20px); }
+  #topbar { grid-template-columns: 190px 1fr 220px; }
+  #hero { grid-template-columns: 1fr; }
+  .project-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 680px) {
+  #topbar { grid-template-columns: 1fr; grid-template-rows: auto auto auto auto; gap: 7px; }
+  #topbar .logo, .classic-search, .account-tools { grid-column: 1; justify-self: stretch; }
+  #topbar .logo { grid-row: 1; } .classic-search { grid-row: 2; padding: 0; } .account-tools { grid-row: 3; text-align: left; }
+  #topbar > .nav-links { grid-column: 1; grid-row: 4; }
+  #hero .hero-feature { grid-template-columns: 1fr; }
+  #hero .hero-img { width: 100%; }
+  .project-grid { grid-template-columns: 1fr 1fr; }
+}
+/* Keep the search field above the navigation artwork so clicks reach the input. */
+#topbar { position: relative; isolation: isolate; grid-template-rows: minmax(60px, auto) 35px; }
+#topbar .classic-search { position: relative; z-index: 5; min-width: 0; }
+#topbar .classic-search input { position: relative; z-index: 6; pointer-events: auto; }
+#topbar > .nav-links { position: relative; z-index: 1; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<div id="topbar">
+  <a class="logo" href="community.html" aria-label="NetSite home"><img src="assets/title.png" alt="NetSite"><span class="classic-tagline">Create Yourself&trade;</span></a>
+  <form class="classic-search" onsubmit="return searchProjects(event)">
+    <input id="site-search" type="search" aria-label="Search projects" placeholder="Search Projects">
+    <button type="submit">Search</button>
+  </form>
+  <div class="nav-links">
+    <a class="nav-link active" href="community.html">Videos</a>
+    <a class="nav-link" href="index.html">Editor</a>
+    <a class="nav-link" href="mystuff.html">My Projects</a>
+  </div>
+  <div class="spacer"></div>
+  <div class="account-tools">
+  <div class="account-links"><button onclick="openJoinModal()">Sign Up</button> | <button onclick="openLoginModal()">My Account</button> | <a href="#footer">Help</a></div>
+  <button class="upload-btn" onclick="openUpload()">Upload</button>
+  <!-- Auth: not logged in -->
+  <div id="auth-buttons" style="display:flex; gap:6px; margin-left:10px;">
+    <button class="upload-btn" onclick="openJoinModal()">Join NetSite</button>
+  </div>
+  </div>
+  <!-- Auth: logged in (hidden by default) -->
+  <div id="user-area" style="display:none; position:relative; margin-left:8px;">
+    <a href="mystuff.html" class="nav-link" style="margin-right:4px;">My Stuff</a>
+    <div id="user-badge" onclick="toggleUserMenu()" style="display:flex; align-items:center; gap:6px; cursor:pointer; padding:2px 8px; border-radius:4px; color:#fff; font-weight:bold; font-size:12px; text-shadow:0 1px 1px rgba(0,0,0,0.3);">
+      <img src="assets/user.png" alt="" style="width:22px; height:22px; image-rendering:pixelated; border-radius:3px;">
+      <span id="user-nickname"></span>
+      <span>&#9662;</span>
+    </div>
+    <div id="user-menu" style="display:none; position:absolute; top:36px; right:0; background:#f5f5f5; border:1px solid #a0a0a0; min-width:160px; z-index:500; box-shadow:2px 3px 8px rgba(0,0,0,0.25); border-radius:0 0 4px 4px; padding:2px 0;">
+      <div class="um-opt" onclick="window.location.href='mystuff.html'">My Stuff</div>
+      <div class="um-opt" onclick="window.location.href='profile.html'">Profile</div>
+      <div class="um-opt" onclick="window.location.href='settings.html'">Settings</div>
+      <div style="height:1px; background:#b0b0b0; margin:2px 4px;"></div>
+      <div class="um-opt" onclick="logoutUser()">Sign Out</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ HERO BANNER ═══════════════ -->
+<div id="hero">
+  <div class="hero-feature">
+    <img class="hero-img" src="assets/homepage.png" alt="A featured NetSite project in the editor">
+    <div class="hero-text">
+      <h1>Make something. Share it with everyone.</h1>
+      <p>NetSite is the place to create interactive stories, games, and animations, then publish them for the whole community to enjoy.</p>
+      <a class="hero-btn" href="index.html">Open the Editor</a>
+    </div>
+  </div>
+  <aside class="join-box">
+    <h2>Welcome to NetSite!</h2>
+    <div class="join-box-body">
+      <strong>Join the creative community.</strong>
+      <ul><li>Build projects in your browser</li><li>Share your creations</li><li>Discover new makers</li></ul>
+      <button class="join-now" onclick="openJoinModal()">Sign Up for Your Free Account</button>
+    </div>
+  </aside>
+  </div>
+
+<!-- ═══════════════ MAIN CONTENT ═══════════════ -->
+<div class="content-wrap">
+
+  <!-- Featured Projects -->
+  <div class="section-header">
+    <h2>Featured Projects</h2>
+  </div>
+  <div class="project-grid" id="featured-grid">
+    <div class="empty-state" id="featured-empty">Loading projects...</div>
+  </div>
+
+  <!-- Recent Projects -->
+  <div class="section-header">
+    <h2>Projects Being Watched Right Now</h2>
+  </div>
+  <div class="project-grid" id="recent-grid">
+    <div class="empty-state" id="recent-empty">Loading projects...</div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ UPLOAD MODAL ═══════════════ -->
+<div id="upload-overlay" onclick="if(event.target===this)closeUpload()">
+  <div id="upload-box">
+    <div class="upload-header">Upload Your Project</div>
+    <div class="upload-body">
+      <label>Choose your .fn0 file:</label>
+      <div class="upload-file-zone" id="file-drop-zone" onclick="document.getElementById('upload-fn0-input').click()">
+        Click here to choose your .fn0 file
+        <div class="file-name" id="upload-file-name"></div>
+      </div>
+      <input type="file" id="upload-fn0-input" accept=".fn0" style="display:none" onchange="handleFileSelect(event)">
+
+      <label>Title:</label>
+      <input type="text" id="upload-title" placeholder="My Awesome Project" maxlength="100">
+
+      <label>Description:</label>
+      <textarea id="upload-desc" placeholder="What is this project about?"></textarea>
+
+      <label>Instructions:</label>
+      <textarea id="upload-instructions" placeholder="How to use / play this project"></textarea>
+
+      <label>Version:</label>
+      <input type="text" id="upload-version" placeholder="Beta 1" maxlength="20">
+
+      <label>Credits (OPTIONAL):</label>
+      <textarea id="upload-credits" placeholder="Special thanks to..."></textarea>
+
+      <label>Thumbnail (OPTIONAL):</label>
+      <input type="file" id="upload-thumb-input" accept="image/*" onchange="handleThumbSelect(event)">
+      <img id="thumb-preview" class="thumb-preview" alt="Thumbnail preview">
+    </div>
+    <div class="upload-footer">
+      <button class="btn-cancel" onclick="closeUpload()">Cancel</button>
+      <button class="btn-publish" id="btn-publish" onclick="publishProject()">Publish</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<div id="footer">
+  NetSite &copy; 2026 &nbsp;|&nbsp; <a href="community.html">Videos</a> &nbsp;|&nbsp; <a href="index.html">Editor</a> &nbsp;|&nbsp; <a href="mystuff.html">My Projects</a>
+</div>
+
+<!-- ═══════════════ JOIN MODAL ═══════════════ -->
+<div id="join-overlay" class="auth-overlay" onclick="if(event.target===this)closeJoinModal()">
+  <div class="auth-window">
+    <div class="auth-titlebar">
+      <span>Join NetSite</span>
+      <button class="auth-close" onclick="closeJoinModal()">&times;</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-step" id="join-step-1">
+        <label>Birth Date:</label>
+        <div class="auth-date-row">
+          <select id="join-month"><option value="">Month</option>
+            <option>January</option><option>February</option><option>March</option>
+            <option>April</option><option>May</option><option>June</option>
+            <option>July</option><option>August</option><option>September</option>
+            <option>October</option><option>November</option><option>December</option>
+          </select>
+          <select id="join-year"><option value="">Year</option></select>
+        </div>
+        <button class="clay-btn auth-next green" onclick="joinStep(2)">Next</button>
+      </div>
+      <div class="auth-step" id="join-step-2" style="display:none">
+        <label>Nickname:</label>
+        <input type="text" id="join-nickname" placeholder="Your username" maxlength="30">
+        <label>Secondary Nickname (optional):</label>
+        <input type="text" id="join-nickname2" placeholder="Display name" maxlength="30">
+        <button class="clay-btn auth-next green" onclick="joinStep(3)">Next</button>
+      </div>
+      <div class="auth-step" id="join-step-3" style="display:none">
+        <label>Password:</label>
+        <input type="password" id="join-password" placeholder="Choose a password" maxlength="50">
+        <button class="clay-btn auth-next green" onclick="doJoin()" style="margin-top:12px;">Join!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOGIN MODAL ═══════════════ -->
+<div id="login-overlay" class="auth-overlay" onclick="if(event.target===this)closeLoginModal()">
+  <div class="auth-window">
+    <div class="auth-titlebar">
+      <span>Sign In</span>
+      <button class="auth-close" onclick="closeLoginModal()">&times;</button>
+    </div>
+    <div class="auth-body">
+      <label>Nickname:</label>
+      <input type="text" id="login-nickname" placeholder="Your username" maxlength="30">
+      <label>Password:</label>
+      <input type="password" id="login-password" placeholder="Password" maxlength="50">
+      <button class="clay-btn auth-next green" onclick="doLogin()" style="margin-top:14px;">Sign In</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+//  Community Page JavaScript
+// ══════════════════════════════════════════
+
+var API_BASE = "http://localhost:8000/api";
+
+function searchProjects(event) {
+  event.preventDefault();
+  var query = (document.getElementById("site-search").value || "").toLowerCase().trim();
+  var cards = document.querySelectorAll(".project-card");
+  for (var i = 0; i < cards.length; i++) {
+    cards[i].style.display = !query || cards[i].textContent.toLowerCase().indexOf(query) !== -1 ? "" : "none";
+  }
+  return false;
+}
+
+function _readCachedProjects() {
+  try {
+    var cached = JSON.parse(localStorage.getItem("fne_community_projects") || "[]");
+    return Array.isArray(cached) ? cached : [];
+  } catch (e) {
+    return [];
+  }
+}
+
+function _writeCachedProjects(projects) {
+  localStorage.setItem("fne_community_projects", JSON.stringify(projects.slice(0, 100)));
+}
+
+function _mergeCachedProjects(projects) {
+  var cache = _readCachedProjects();
+  var byId = {};
+  cache.concat(projects || []).forEach(function (p) {
+    if (!p || !p.id) return;
+    byId[p.id] = Object.assign({}, byId[p.id] || {}, p);
+  });
+  var merged = Object.keys(byId).map(function (id) { return byId[id]; });
+  merged.sort(function (a, b) {
+    return new Date(b.created || 0) - new Date(a.created || 0);
+  });
+  _writeCachedProjects(merged);
+  return merged;
+}
+
+// ─── Load projects from server ───
+function loadProjects() {
+  fetch(API_BASE + "/projects/")
+    .then(function(r) { return r.json(); })
+    .then(function(data) {
+      var projects = data.projects || data || [];
+      projects = projects.length ? _mergeCachedProjects(projects) : _readCachedProjects();
+      renderGrid("featured-grid", "featured-empty", projects.slice(0, 8));
+      renderGrid("recent-grid", "recent-empty", projects.slice(0, 12));
+    })
+    .catch(function() {
+      var cached = _readCachedProjects();
+      if (cached.length) {
+        renderGrid("featured-grid", "featured-empty", cached.slice(0, 8));
+        renderGrid("recent-grid", "recent-empty", cached.slice(0, 12));
+        return;
+      }
+      document.getElementById("featured-empty").textContent = "No cached projects yet. The server may be waking up.";
+      document.getElementById("recent-empty").textContent = "Try again in a moment.";
+    });
+}
+
+function renderGrid(gridId, emptyId, projects) {
+  var grid = document.getElementById(gridId);
+  var empty = document.getElementById(emptyId);
+  if (!projects || projects.length === 0) {
+    empty.textContent = "No projects yet! Be the first to upload.";
+    return;
+  }
+  empty.style.display = "none";
+  // Clear existing cards (but keep empty-state div)
+  var cards = grid.querySelectorAll(".project-card");
+  for (var i = 0; i < cards.length; i++) cards[i].remove();
+
+  for (var j = 0; j < projects.length; j++) {
+    var p = projects[j];
+    var card = document.createElement("a");
+    card.className = "project-card";
+    card.href = "viewproject.html?id=" + encodeURIComponent(p.id);
+    var thumbHtml = p.thumbnail
+      ? '<img src="' + p.thumbnail + '" alt="">' : '';
+    card.innerHTML =
+      '<div class="card-thumb">' +
+        thumbHtml +
+        '<div class="card-play"></div>' +
+      '</div>' +
+      '<div class="card-info">' +
+        '<div class="card-title">' + escapeHtml(p.title || "Untitled") + '</div>' +
+        '<div class="card-author">by ' + escapeHtml(p.author || "Anonymous") + '</div>' +
+        '<div class="card-meta">' +
+          '<span>v' + escapeHtml(p.version || "Beta 1") + '</span>' +
+          '<span>' + formatDate(p.created) + '</span>' +
+        '</div>' +
+      '</div>';
+    grid.appendChild(card);
+  }
+}
+
+function escapeHtml(s) {
+  var d = document.createElement("div");
+  d.textContent = s;
+  return d.innerHTML;
+}
+
+function formatDate(d) {
+  if (!d) return "";
+  var dt = new Date(d);
+  return dt.toLocaleDateString();
+}
+
+// ─── Upload modal ───
+var _uploadedFileData = null;
+var _uploadedThumbData = null;
+
+function openUpload() {
+  document.getElementById("upload-overlay").classList.add("open");
+  _uploadedFileData = null;
+  _uploadedThumbData = null;
+  document.getElementById("upload-file-name").textContent = "";
+  document.getElementById("upload-title").value = "";
+  document.getElementById("upload-desc").value = "";
+  document.getElementById("upload-instructions").value = "";
+  document.getElementById("upload-version").value = "Beta 1";
+  document.getElementById("upload-credits").value = "";
+  document.getElementById("upload-thumb-input").value = "";
+  var tp = document.getElementById("thumb-preview");
+  tp.style.display = "none";
+  tp.src = "";
+}
+
+function closeUpload() {
+  document.getElementById("upload-overlay").classList.remove("open");
+}
+
+function handleFileSelect(evt) {
+  var file = evt.target.files[0];
+  if (!file) return;
+  if (!file.name.endsWith(".fn0")) {
+    alert("Please select a .fn0 file.");
+    return;
+  }
+  document.getElementById("upload-file-name").textContent = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _uploadedFileData = e.target.result;
+  };
+  reader.readAsText(file);
+}
+
+function handleThumbSelect(evt) {
+  var file = evt.target.files[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) {
+    alert("Please select an image file.");
+    return;
+  }
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    _uploadedThumbData = e.target.result;
+    var tp = document.getElementById("thumb-preview");
+    tp.src = _uploadedThumbData;
+    tp.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+}
+
+function publishProject() {
+  var title = document.getElementById("upload-title").value.trim();
+  var desc = document.getElementById("upload-desc").value.trim();
+  var instructions = document.getElementById("upload-instructions").value.trim();
+  var version = document.getElementById("upload-version").value.trim() || "Beta 1";
+  var credits = document.getElementById("upload-credits").value.trim();
+
+  if (!_uploadedFileData) {
+    alert("Please select a .fn0 file first!");
+    return;
+  }
+  if (!title) {
+    alert("Please enter a title.");
+    return;
+  }
+
+  var btn = document.getElementById("btn-publish");
+  btn.disabled = true;
+  btn.textContent = "Publishing...";
+
+  var payload = {
+    title: title,
+    description: desc,
+    instructions: instructions,
+    version: version,
+    credits: credits,
+    project_data: _uploadedFileData,
+    author: "Anonymous"
+  };
+  if (_uploadedThumbData) {
+    payload.thumbnail = _uploadedThumbData;
+  }
+
+  var localProject = Object.assign({
+    id: "local_" + Date.now(),
+    created: new Date().toISOString()
+  }, payload);
+
+  fetch(API_BASE + "/projects/", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(payload)
+  })
+  .then(function(r) {
+    if (!r.ok) throw new Error("Server error: " + r.status);
+    return r.json();
+  })
+  .then(function(data) {
+    _mergeCachedProjects([Object.assign({}, localProject, data)]);
+    btn.disabled = false;
+    btn.textContent = "Publish";
+    closeUpload();
+    alert("Project published successfully!");
+    loadProjects();
+  })
+  .catch(function(err) {
+    _mergeCachedProjects([localProject]);
+    btn.disabled = false;
+    btn.textContent = "Publish";
+    closeUpload();
+    alert("The server did not answer, so NetSite saved this post in this browser and will show it while the server wakes up.\n\nServer detail: " + err.message);
+    loadProjects();
+  });
+}
+
+// Init
+loadProjects();
+
+// ══════════════════════════════════════════
+//  Auth system (shared localStorage with editor)
+// ══════════════════════════════════════════
+var _currentUser = null;
+
+function _loadAuth() {
+  var saved = localStorage.getItem("fne_current_user");
+  if (!saved) { _showLoggedOut(); return; }
+  try { _currentUser = JSON.parse(saved); } catch(e) { _showLoggedOut(); return; }
+  _showLoggedIn();
+}
+
+function _showLoggedIn() {
+  document.getElementById("auth-buttons").style.display = "none";
+  var area = document.getElementById("user-area");
+  area.style.display = "flex";
+  area.style.alignItems = "center";
+  document.getElementById("user-nickname").textContent = _currentUser.nickname;
+}
+
+function _showLoggedOut() {
+  document.getElementById("auth-buttons").style.display = "flex";
+  document.getElementById("user-area").style.display = "none";
+  _currentUser = null;
+}
+
+function openJoinModal() {
+  var sel = document.getElementById("join-year");
+  if (sel.options.length <= 1) {
+    for (var y = 2020; y >= 1950; y--) {
+      var o = document.createElement("option"); o.value = y; o.textContent = y;
+      sel.appendChild(o);
+    }
+  }
+  document.getElementById("join-step-1").style.display = "";
+  document.getElementById("join-step-2").style.display = "none";
+  document.getElementById("join-step-3").style.display = "none";
+  document.getElementById("join-overlay").classList.add("open");
+}
+function closeJoinModal() { document.getElementById("join-overlay").classList.remove("open"); }
+
+function joinStep(n) {
+  if (n === 2) {
+    if (!document.getElementById("join-month").value || !document.getElementById("join-year").value) {
+      alert("Please select your birth month and year."); return;
+    }
+    document.getElementById("join-step-1").style.display = "none";
+    document.getElementById("join-step-2").style.display = "";
+  } else if (n === 3) {
+    var nick = document.getElementById("join-nickname").value.trim();
+    if (!nick) { alert("Please enter a nickname."); return; }
+    var users = JSON.parse(localStorage.getItem("fne_users") || "{}");
+    if (users[nick.toLowerCase()]) { alert("That nickname is already taken!"); return; }
+    document.getElementById("join-step-2").style.display = "none";
+    document.getElementById("join-step-3").style.display = "";
+  }
+}
+
+function doJoin() {
+  var nick = document.getElementById("join-nickname").value.trim();
+  var nick2 = document.getElementById("join-nickname2").value.trim();
+  var pw = document.getElementById("join-password").value;
+  if (!pw || pw.length < 4) { alert("Password must be at least 4 characters."); return; }
+  var users = JSON.parse(localStorage.getItem("fne_users") || "{}");
+  users[nick.toLowerCase()] = {
+    nickname: nick, nickname2: nick2, password: pw,
+    created: new Date().toISOString(), projects: []
+  };
+  localStorage.setItem("fne_users", JSON.stringify(users));
+  _currentUser = { nickname: nick };
+  localStorage.setItem("fne_current_user", JSON.stringify(_currentUser));
+  closeJoinModal();
+  _showLoggedIn();
+}
+
+function openLoginModal() { document.getElementById("login-overlay").classList.add("open"); }
+function closeLoginModal() { document.getElementById("login-overlay").classList.remove("open"); }
+
+function doLogin() {
+  var nick = document.getElementById("login-nickname").value.trim();
+  var pw = document.getElementById("login-password").value;
+  if (!nick || !pw) { alert("Please enter both nickname and password."); return; }
+  var users = JSON.parse(localStorage.getItem("fne_users") || "{}");
+  var u = users[nick.toLowerCase()];
+  if (!u || u.password !== pw) { alert("Invalid nickname or password."); return; }
+  _currentUser = { nickname: u.nickname };
+  localStorage.setItem("fne_current_user", JSON.stringify(_currentUser));
+  closeLoginModal();
+  _showLoggedIn();
+}
+
+function logoutUser() {
+  localStorage.removeItem("fne_current_user");
+  _showLoggedOut();
+}
+
+function toggleUserMenu() {
+  var m = document.getElementById("user-menu");
+  m.style.display = m.style.display === "block" ? "none" : "block";
+}
+
+document.addEventListener("click", function(e) {
+  var badge = document.getElementById("user-badge");
+  var menu = document.getElementById("user-menu");
+  if (badge && menu && !badge.contains(e.target) && !menu.contains(e.target)) {
+    menu.style.display = "none";
+  }
+});
+
+_loadAuth();
+</script>
+</body>
+</html>

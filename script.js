@@ -25,8 +25,9 @@
   let wallpaperExplorerOpen = false;
   let draggedTile = null;
   let draggedRecently = false;
+  const DEFAULT_WALLPAPER = "./imageres/wallpapers/pumpkin-dry-grass.jpg";
   let wallpaperItems = [
-    { name: "Default wallpaper", value: "./imageres/home_page_bg.jpg" }
+    { name: "Pumpkin patch with dry grass", value: DEFAULT_WALLPAPER }
   ];
   let wallpaperLibraryItems = [];
 
@@ -162,35 +163,19 @@
   }
 
   function buildBundledWallpaperItems() {
-    const names = [];
-    const addNumbered = function (prefix, count) {
-      for (let number = 1; number <= count; number += 1) {
-        names.push(prefix + number + ".jpg");
-      }
-    };
-
-    names.push("null0.jpg");
-    addNumbered("beta", 10);
-    names.push("beta3 — копия.jpg");
-    addNumbered("example", 5);
-    addNumbered("Extra", 2);
-    addNumbered("Final", 14);
-    names.push("Final2 — копия.jpg", "Final9 — копия.jpg", "Instal1.jpg");
-    addNumbered("Starter", 28);
-    addNumbered("Unreleased", 13);
-
-    return names.map(function (name) {
-      return {
-        name: name,
-        path: "/AeroVistaX%20Wallpapers/" + encodeURIComponent(name)
-      };
-    });
+    return [
+      { name: "Pumpkin patch with dry grass", path: "/imageres/wallpapers/pumpkin-dry-grass.jpg" },
+      { name: "Pumpkin field", path: "/imageres/wallpapers/pumpkin-field.jpg" },
+      { name: "Pumpkin row", path: "/imageres/wallpapers/pumpkin-row.jpg" },
+      { name: "Pumpkin field at sunset", path: "/imageres/wallpapers/pumpkin-sunset-field.jpg" },
+      { name: "Pumpkin close-up at sunset", path: "/imageres/wallpapers/pumpkin-sunset-close.jpg" }
+    ];
   }
 
   function populateWallpaperSelect(items) {
     const currentValue = localStorage.getItem(STORAGE_KEYS.wallpaper) || document.body.getAttribute("data-wallpaper");
-    wallpaperSelect.innerHTML = '<option value="./imageres/home_page_bg.jpg">Default wallpaper</option>';
-    wallpaperItems = [{ name: "Default wallpaper", value: "./imageres/home_page_bg.jpg" }];
+    wallpaperSelect.innerHTML = '';
+    wallpaperItems = [];
     wallpaperLibraryItems = [];
     items.forEach(function (item) {
       const option = document.createElement("option");
@@ -204,7 +189,7 @@
       wallpaperItems.push(normalizedItem);
       wallpaperLibraryItems.push(normalizedItem);
     });
-    wallpaperSelect.value = currentValue || "./imageres/home_page_bg.jpg";
+    wallpaperSelect.value = currentValue || DEFAULT_WALLPAPER;
     renderWallpaperExplorer();
   }
 
@@ -214,7 +199,7 @@
   }
 
   function setWallpaper(path, persist) {
-    const normalizedPath = path || "./imageres/home_page_bg.jpg";
+    const normalizedPath = path || DEFAULT_WALLPAPER;
     document.body.style.setProperty("--wallpaper", 'url("' + normalizedPath + '")');
     if (wallpaperSelect) {
       wallpaperSelect.value = normalizedPath;
@@ -252,11 +237,11 @@
       });
       wallpaperExplorerGrid.appendChild(tile);
     });
-    updateWallpaperExplorerSelection(wallpaperSelect ? wallpaperSelect.value : "./imageres/home_page_bg.jpg");
+    updateWallpaperExplorerSelection(wallpaperSelect ? wallpaperSelect.value : DEFAULT_WALLPAPER);
   }
 
   function updateWallpaperExplorerSelection(path) {
-    const normalizedPath = path || "./imageres/home_page_bg.jpg";
+    const normalizedPath = path || DEFAULT_WALLPAPER;
     const currentItem = wallpaperLibraryItems.find(function (item) {
       return item.value === normalizedPath;
     });

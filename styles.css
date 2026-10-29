@@ -436,6 +436,79 @@ button {
   left: 18px;
 }
 
+.built-in-tile__badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 2;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.9);
+  border-radius: 9px;
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.86), rgba(170, 145, 185, 0.72));
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(24, 12, 32, 0.34);
+  color: #372744;
+  font-family: "HelveticaNeue", sans-serif;
+  font-weight: 700;
+}
+
+.start-menu__bar {
+  height: 40px;
+  border-top: 1px solid rgba(255, 255, 255, 0.95);
+  border-bottom: 1px solid #4f4f4f;
+  background: linear-gradient(#f7f7f7 0%, #d8d8d8 44%, #ababab 48%, #e4e4e4 100%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 0, 0, 0.55);
+}
+
+.start-menu__bar-image {
+  display: none;
+}
+
+.start-menu__nav-button {
+  color: #191919;
+  font-family: "HelveticaNeue", sans-serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.75);
+}
+
+.start-menu__nav-button:hover,
+.start-menu__nav-button.is-active {
+  border-color: rgba(72, 72, 72, 0.48);
+  background: linear-gradient(rgba(255, 255, 255, 0.75), rgba(173, 173, 173, 0.5));
+}
+
+.built-in-stage .start-tile {
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.92);
+  border-radius: 5px;
+  background: linear-gradient(180deg, #e8ddef 0%, #d5c1dc 43%, #b699c1 100%);
+  box-shadow: inset 0 1px rgba(255, 255, 255, 0.98), inset 0 -1px rgba(83, 57, 89, 0.45), 0 2px 5px rgba(32, 20, 37, 0.5);
+}
+
+.built-in-stage .start-tile::before {
+  z-index: 1;
+  border-radius: 4px;
+  opacity: 0.75;
+  mix-blend-mode: screen;
+}
+
+.built-in-stage .start-tile__surface {
+  display: none;
+}
+
+.built-in-stage .start-tile__title,
+.built-in-stage .start-tile__description {
+  color: #211627;
+  text-shadow: 0 1px rgba(255, 255, 255, 0.68);
+}
+
+.built-in-stage .start-tile__description {
+  color: rgba(33, 22, 39, 0.82);
+}
+
 .start-tile__app-icon + .start-tile__title {
   max-width: calc(100% - 8px);
 }

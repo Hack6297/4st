@@ -1,7 +1,11 @@
 # The multiplayer WebSocket server is deployed separately on Cloudflare Workers.
-# Vercel hosts the static 4 Studios site and offline game only.
+# Vercel hosts the lightweight 4 Studios home site. Built-in apps live on
+# Cloudflare Pages, so their large game files do not slow down this site.
 server.py
 requirements.txt
 render.yaml
 .python-version
 cloudflare-multiplayer/
+Built-in apps/
+AeroVistaX Wallpapers/
+fonts/SegoeUI-Light.ttf

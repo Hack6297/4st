@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NetSite Editor - Alpha 1</title>
+<link rel="stylesheet" href="scratch.css">
+<link rel="stylesheet" href="editor-button-slices.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+<!-- Google Blockly with custom Scratch 2.0 compact renderer -->
+<script src="https://unpkg.com/blockly@11.2.1/blockly_compressed.js"></script>
+<script src="https://unpkg.com/blockly@11.2.1/blocks_compressed.js"></script>
+<script src="https://unpkg.com/blockly@11.2.1/javascript_compressed.js"></script>
+<script src="https://unpkg.com/blockly@11.2.1/msg/en.js"></script>
+</head>
+<body>
+
+<!-- ═══════════════ TOP MENU BAR ═══════════════ -->
+<div id="menubar">
+  <a class="menu-logo" href="community.html" aria-label="NetSite home"><img src="assets/title.png" alt="NetSite"><small>Editor</small></a>
+  <button type="button" id="upload-background-btn" title="Upload a background for the current website page">Upload website background</button>
+  <div class="menu-items">
+    <span class="menu-item" onclick="toggleMenu('file-menu')">File &#9662;</span>
+    <span class="menu-item" onclick="toggleMenu('edit-menu')">Edit &#9662;</span>
+    <span class="menu-item" onclick="toggleMenu('help-menu')">Help &#9662;</span>
+    <span class="menu-item" onclick="window.location.href='community.html'">Videos</span>
+  </div>
+  <div class="menu-dropdown" id="file-menu">
+    <div class="menu-option" onclick="newProject()">New</div>
+    <div class="menu-option" onclick="saveProject()">Download project</div>
+    <div class="menu-option" onclick="saveProjectToMyStuff()">Save to My Stuff</div>
+    <div class="menu-option" onclick="loadProject()">Import project folder</div>
+    <div class="menu-sep"></div>
+    <div class="menu-option" onclick="exportProject()">Export Project</div>
+  </div>
+  <div class="menu-dropdown" id="edit-menu">
+    <div class="menu-option" onclick="undoBlocks()">Undo</div>
+    <div class="menu-option" onclick="redoBlocks()">Redo</div>
+    <div class="menu-sep"></div>
+    <div class="menu-option" onclick="clearStage()">Clear Stage</div>
+  </div>
+  <div class="menu-dropdown" id="help-menu">
+    <div class="menu-option" onclick="showAbout()">About NetSite Alpha 1</div>
+  </div>
+  <div class="menu-spacer"></div>
+  <!-- Auth: not logged in -->
+  <div id="auth-buttons">
+    <button class="clay-btn menu-auth-btn" onclick="openJoinModal()">Join</button>
+    <button class="clay-btn menu-auth-btn" onclick="openLoginModal()">Log In</button>
+  </div>
+  <!-- Auth: logged in (hidden by default) -->
+  <div id="user-area" style="display:none">
+    <div id="user-badge" onclick="toggleUserMenu()">
+      <img src="assets/user.png" alt="" class="user-avatar">
+      <span id="user-nickname"></span>
+      <span class="user-caret">&#9662;</span>
+    </div>
+    <div class="menu-dropdown" id="user-menu">
+      <div class="menu-option" onclick="window.location.href='mystuff.html'">My Stuff</div>
+      <div class="menu-option" onclick="window.location.href='profile.html'">Profile</div>
+      <div class="menu-option" onclick="window.location.href='settings.html'">Settings</div>
+      <div class="menu-sep"></div>
+      <div class="menu-option" onclick="logoutUser()">Sign Out</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ JOIN MODAL (Scratch 2.0 style) ═══════════════ -->
+<div id="join-overlay" class="auth-overlay" onclick="if(event.target===this)closeJoinModal()">
+  <div class="auth-window">
+    <div class="auth-titlebar">
+      <span>Join NetSite</span>
+      <button class="auth-close" onclick="closeJoinModal()">&times;</button>
+    </div>
+    <div class="auth-body">
+      <div class="auth-step" id="join-step-1">
+        <label>Birth Date:</label>
+        <div class="auth-date-row">
+          <select id="join-month"><option value="">Month</option>
+            <option>January</option><option>February</option><option>March</option>
+            <option>April</option><option>May</option><option>June</option>
+            <option>July</option><option>August</option><option>September</option>
+            <option>October</option><option>November</option><option>December</option>
+          </select>
+          <select id="join-year"><option value="">Year</option></select>
+        </div>
+        <button class="clay-btn auth-next green" onclick="joinStep(2)">Next</button>
+      </div>
+      <div class="auth-step" id="join-step-2" style="display:none">
+        <label>Nickname:</label>
+        <input type="text" id="join-nickname" placeholder="Your username" maxlength="30">
+        <label>Secondary Nickname (optional):</label>
+        <input type="text" id="join-nickname2" placeholder="Display name" maxlength="30">
+        <button class="clay-btn auth-next green" onclick="joinStep(3)">Next</button>
+      </div>
+      <div class="auth-step" id="join-step-3" style="display:none">
+        <label>Password:</label>
+        <input type="password" id="join-password" placeholder="Choose a password" maxlength="50">
+        <button class="clay-btn auth-next green" onclick="doJoin()" style="margin-top:12px;">Join!</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ LOGIN MODAL ═══════════════ -->
+<div id="login-overlay" class="auth-overlay" onclick="if(event.target===this)closeLoginModal()">
+  <div class="auth-window" style="min-height:auto">
+    <div class="auth-titlebar">
+      <span>Log In</span>
+      <button class="auth-close" onclick="closeLoginModal()">&times;</button>
+    </div>
+    <div class="auth-body">
+      <label>Nickname:</label>
+      <input type="text" id="login-nickname" placeholder="Your nickname" maxlength="30">
+      <label>Password:</label>
+      <input type="password" id="login-password" placeholder="Password" maxlength="50">
+      <button class="clay-btn auth-next green" onclick="doLogin()" style="margin-top:12px;">Log In</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ MAIN LAYOUT ═══════════════ -->
+<div id="app">
+
+  <!-- LEFT: Block Script Editor (Blockly) -->
+  <div id="editor-panel">
+    <menu id="editor-tabs" role="tablist" aria-label="Editor sections">
+      <button class="tab-btn active" id="tab-scripts" role="tab" aria-selected="true" onclick="showTab('scripts')">Scripts</button>
+      <button class="tab-btn" id="tab-costumes" role="tab" aria-selected="false" onclick="showTab('costumes')">Styler</button>
+      <button class="tab-btn" id="tab-sounds" role="tab" aria-selected="false" onclick="showTab('sounds')">Media</button>
+    </menu>
+
+    <div id="tab-scripts-content" class="tab-content active">
+      <div id="blockly-div"></div>
+    </div>
+    <div id="tab-costumes-content" class="tab-content">
+      <div id="costumes-editor">
+        <div id="costume-sidebar">
+          <div id="costume-list"></div>
+          <div id="costume-sidebar-btns">
+            <button class="clay-btn small-btn" onclick="addCostumeFromFile()">Upload</button>
+            <button class="clay-btn small-btn" onclick="addBlankCostume()">+ New</button>
+          </div>
+        </div>
+        <div id="costume-main">
+          <!-- Scratch 1.0 Paint Editor: tool palette left, canvas right -->
+          <div id="paint-layout">
+            <!-- Tool palette (2-column grid, like Scratch 1.0) -->
+            <div id="paint-tools">
+              <button class="clay-btn paint-tool active" data-tool="select" onclick="setCostumeTool('select')" title="Select">🔲</button>
+              <button class="clay-btn paint-tool" data-tool="stamp" onclick="setCostumeTool('stamp')" title="Stamp">📋</button>
+              <button class="clay-btn paint-tool" data-tool="pencil" onclick="setCostumeTool('pencil')" title="Pencil">✏️</button>
+              <button class="clay-btn paint-tool" data-tool="line" onclick="setCostumeTool('line')" title="Line">╲</button>
+              <button class="clay-btn paint-tool" data-tool="rect" onclick="setCostumeTool('rect')" title="Rectangle">▭</button>
+              <button class="clay-btn paint-tool" data-tool="circle" onclick="setCostumeTool('circle')" title="Circle">○</button>
+              <button class="clay-btn paint-tool" data-tool="fill" onclick="setCostumeTool('fill')" title="Fill">🪣</button>
+              <button class="clay-btn paint-tool" data-tool="eraser" onclick="setCostumeTool('eraser')" title="Eraser">🧹</button>
+              <button class="clay-btn paint-tool" data-tool="text" onclick="setCostumeTool('text')" title="Text">A</button>
+              <button class="clay-btn paint-tool" data-tool="eyedropper" onclick="setCostumeTool('eyedropper')" title="Eyedropper">💧</button>
+            </div>
+            <!-- Canvas + options area -->
+            <div id="paint-right">
+              <!-- Options bar (color, brush size) -->
+              <div id="paint-options">
+                <label class="paint-opt-label">Color:</label>
+                <input type="color" id="costume-color" value="#000000">
+                <label class="paint-opt-label">Size:</label>
+                <input type="range" id="costume-brush-size" min="1" max="40" value="3" style="width:80px;">
+                <span id="costume-brush-size-label">3</span>
+                <span class="paint-opt-sep"></span>
+                <button class="clay-btn small-btn" onclick="clearCostumeCanvas()" title="Clear canvas">Clear</button>
+                <button class="clay-btn small-btn" onclick="undoCostume()" title="Undo">Undo</button>
+              </div>
+              <!-- Canvas -->
+              <div id="costume-canvas-wrap">
+                <canvas id="costume-canvas" width="480" height="360"></canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="tab-sounds-content" class="tab-content">
+      <div id="sounds-editor">
+        <div id="sound-sidebar">
+          <div id="sound-list"></div>
+          <div id="sound-sidebar-btns">
+            <button class="clay-btn small-btn" onclick="uploadSound()">Upload</button>
+            <button class="clay-btn small-btn" onclick="recordSound()">🎤 Record</button>
+          </div>
+        </div>
+        <div id="sound-main">
+          <canvas id="sound-waveform" width="400" height="120"></canvas>
+          <div id="sound-controls">
+            <button class="clay-btn small-btn" onclick="playSoundPreview()">▶ Play</button>
+            <button class="clay-btn small-btn" onclick="stopSoundPreview()">■ Stop</button>
+            <button class="clay-btn small-btn" onclick="deleteSoundEntry()">🗑 Delete</button>
+            <span id="sound-name-label" style="margin-left:8px;color:#ccc;font-size:11px;">No sound selected</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Stage + Controls + Sprite List -->
+  <div id="right-panel">
+
+    <!-- Stage controls bar -->
+    <div id="stage-controls">
+      <button class="green-flag preview-btn" id="btn-flag" onclick="runScripts()" title="Test element actions">
+        <span>Test Actions</span>
+      </button>
+      <button class="stop-btn clear-preview-btn" id="btn-stop" onclick="clearWebsitePreview()" title="Clear website preview">
+        <span>Clear</span>
+      </button>
+      <strong class="preview-label">Website Preview</strong>
+      <span class="prealpha-note">Alpha 1</span>
+      <div class="stage-mode-btns">
+        <button class="clay-btn mode-btn active" id="btn-normal" onclick="setStageMode('normal')" title="Normal">
+          <svg width="16" height="12"><rect x="1" y="1" width="14" height="10" rx="1" fill="none" stroke="#444" stroke-width="1.5"/></svg>
+        </button>
+        <button class="clay-btn mode-btn" id="btn-big" onclick="setStageMode('big')" title="Presentation">
+          <svg width="20" height="15"><rect x="1" y="1" width="18" height="13" rx="1" fill="none" stroke="#444" stroke-width="1.5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- The stage canvas -->
+    <div id="stage-container">
+      <canvas id="stage" width="480" height="360"></canvas>
+      <iframe id="website-preview" title="Website preview" sandbox="allow-forms allow-popups allow-scripts"></iframe>
+      <div id="var-monitors"></div>
+    </div>
+
+    <!-- Info / Properties panel -->
+    <div id="info-panel">
+      <div id="info-panel-header">
+        <span class="panel-title">Info</span>
+      </div>
+      <div id="info-panel-body">
+        <div class="info-row">
+          <label>Object Name:</label>
+          <input type="text" id="info-name" value="" spellcheck="false">
+        </div>
+        <div class="info-row">
+          <label>Rotation:</label>
+          <input type="number" id="info-rotation" value="90">
+        </div>
+        <div class="info-row info-section-toggle" onclick="toggleInfoSection('position')">
+          <label>Position ▾</label>
+        </div>
+        <div id="info-position-section">
+          <div class="info-row">
+            <label>x:</label><input type="number" id="info-x" value="0">
+          </div>
+          <div class="info-row">
+            <label>y:</label><input type="number" id="info-y" value="0">
+          </div>
+          <div class="info-row">
+            <label>z:</label><input type="number" id="info-z" value="0">
+          </div>
+        </div>
+        <div class="info-row">
+          <label>Size:</label>
+          <input type="number" id="info-scale" value="100">
+        </div>
+        <div class="info-row">
+          <label>Scale X:</label>
+          <input type="number" id="info-scale-x" value="100">
+        </div>
+        <div class="info-row">
+          <label>Scale Y:</label>
+          <input type="number" id="info-scale-y" value="100">
+        </div>
+        <div class="info-row">
+          <label for="info-static">Static:</label>
+          <label class="win7-checkbox">
+            <input type="checkbox" id="info-static">
+            <span class="win7-checkmark"></span>
+          </label>
+        </div>
+        <div class="info-row">
+          <label for="info-collision">Collision:</label>
+          <label class="win7-checkbox">
+            <input type="checkbox" id="info-collision" checked>
+            <span class="win7-checkmark"></span>
+          </label>
+        </div>
+        <div class="info-row">
+          <label>Gravity:</label>
+          <input type="number" id="info-gravity" value="0" step="0.1">
+        </div>
+        <div class="info-row">
+          <label>Object type:</label>
+          <select id="info-object-type">
+            <option value="sprite">Element Library</option>
+            <option value="object">Object</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sprite list panel -->
+    <div id="sprite-panel">
+      <div id="sprite-panel-header">
+        <span class="panel-title">Elements</span>
+        <button class="clay-btn small-btn" onclick="openSpritePicker()" title="Choose Element">＋ Element</button>
+        <button class="clay-btn small-btn" onclick="openObjectPicker()" title="Add Object">＋ Object</button>
+      </div>
+      <div id="sprite-list">
+        <!-- sprite entries injected here -->
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ═══════════════ SPRITE PICKER MODAL ═══════════════ -->
+<div id="sprite-picker-overlay" onclick="closeSpritePicker(event)">
+  <div id="sprite-picker-box">
+    <div id="sprite-picker-title">Choose an Element</div>
+    <div id="sprite-picker-grid"></div>
+    <div id="sprite-picker-footer">
+      <button class="clay-btn" onclick="closeSpritePicker()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ OBJECT PICKER MODAL ═══════════════ -->
+<div id="object-picker-overlay" onclick="closeObjectPicker(event)">
+  <div id="sprite-picker-box">
+    <div id="sprite-picker-title">Choose an Object</div>
+    <div id="object-picker-grid" class="picker-grid-inner"></div>
+    <div id="sprite-picker-footer">
+      <button class="clay-btn" onclick="closeObjectPicker()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ STATUS BAR ═══════════════ -->
+<div id="statusbar">
+  <span id="status-msg">Ready.</span>
+  <span id="status-right">NetSite Alpha 1 — Powered by Blockly</span>
+</div>
+
+<!-- Hidden file input for loading projects -->
+<input type="file" id="load-file-input" accept=".fn0,.sb1,.json" style="display:none" onchange="doLoadProject(event)">
+<input type="file" id="costume-file-input" accept="image/*" style="display:none" onchange="doCostumeUpload(event)">
+<input type="file" id="sound-file-input" accept="audio/*" style="display:none" onchange="doSoundUpload(event)">
+<input type="file" id="website-background-input" accept="image/*" style="display:none">
+
+<!-- Blockly toolbox XML -->
+<xml id="toolbox" style="display:none">
+  <!-- MOTION -->
+  <category name="Motion" colour="#4a6cd4">
+    <block type="scratch_move_steps"><value name="STEPS"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    <block type="scratch_turn_right"><value name="DEG"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
+    <block type="scratch_turn_left"><value name="DEG"><shadow type="math_number"><field name="NUM">15</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_goto_xy"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <block type="scratch_goto_target"></block>
+    <block type="scratch_glide"><value name="SECS"><shadow type="math_number"><field name="NUM">1</field></shadow></value><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <block type="scratch_point_dir"><value name="DIR"><shadow type="math_number"><field name="NUM">90</field></shadow></value></block>
+    <block type="scratch_point_towards"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_change_x"><value name="DX"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    <block type="scratch_change_y"><value name="DY"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    <block type="scratch_set_x"><value name="X"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <block type="scratch_set_y"><value name="Y"><shadow type="math_number"><field name="NUM">0</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_bounce"></block>
+    <block type="scratch_set_rotation_style"></block>
+    <sep gap="16"></sep>
+    <label text="── Physics ──"></label>
+    <block type="scratch_set_gravity"><value name="G"><shadow type="math_number"><field name="NUM">9.8</field></shadow></value></block>
+    <block type="scratch_set_velocity_x"><value name="VX"><shadow type="math_number"><field name="NUM">5</field></shadow></value></block>
+    <block type="scratch_set_velocity_y"><value name="VY"><shadow type="math_number"><field name="NUM">5</field></shadow></value></block>
+    <block type="scratch_change_velocity_x"><value name="VX"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <block type="scratch_change_velocity_y"><value name="VY"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <block type="scratch_set_static"></block>
+    <sep gap="24"></sep>
+    <block type="scratch_x_pos"></block>
+    <block type="scratch_y_pos"></block>
+    <block type="scratch_velocity_x"></block>
+    <block type="scratch_velocity_y"></block>
+    <block type="scratch_direction"></block>
+  </category>
+  <!-- LOOKS -->
+  <category name="Looks" colour="#8a55d7">
+    <block type="scratch_say"><value name="MSG"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value></block>
+    <block type="scratch_say_for"><value name="MSG"><shadow type="text"><field name="TEXT">Hello!</field></shadow></value><value name="SECS"><shadow type="math_number"><field name="NUM">2</field></shadow></value></block>
+    <block type="scratch_think"><value name="MSG"><shadow type="text"><field name="TEXT">Hmm...</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_show"></block>
+    <block type="scratch_hide"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_change_size"><value name="CHANGE"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    <block type="scratch_set_size"><value name="SIZE"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_set_scale_x"><value name="VAL"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+    <block type="scratch_set_scale_y"><value name="VAL"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+    <block type="scratch_set_scale_z"><value name="VAL"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_go_front"></block>
+    <block type="scratch_go_back"><value name="N"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_camera_follow"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_next_costume"></block>
+    <block type="scratch_prev_costume"></block>
+    <block type="scratch_switch_costume"><value name="NUM"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <block type="scratch_costume_number"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_set_bg_color"></block>
+    <block type="scratch_set_bg_image"></block>
+    <block type="scratch_draw_on_bg"></block>
+  </category>
+  <!-- MEDIA -->
+  <category name="Media" colour="#bb42c3">
+    <block type="scratch_play_sound"></block>
+    <block type="scratch_play_sound_until_done"></block>
+    <block type="scratch_stop_sounds"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_play_uploaded_sound"><value name="SLOT"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_change_volume"><value name="VOL"><shadow type="math_number"><field name="NUM">-10</field></shadow></value></block>
+    <block type="scratch_set_volume"><value name="VOL"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+  </category>
+  <!-- EVENTS -->
+  <category name="Events" colour="#c88330">
+    <block type="scratch_when_flag"></block>
+    <block type="scratch_when_key"></block>
+    <block type="scratch_when_clicked"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_broadcast"></block>
+    <block type="scratch_broadcast_wait"></block>
+    <block type="scratch_when_receive"></block>
+  </category>
+  <!-- CONTROL -->
+  <category name="Control" colour="#e1a91a">
+    <block type="scratch_wait"><value name="SECS"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_repeat"><value name="TIMES"><shadow type="math_number"><field name="NUM">10</field></shadow></value></block>
+    <block type="scratch_forever"></block>
+    <block type="scratch_forever_if"></block>
+    <block type="scratch_repeat_until"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_if"></block>
+    <block type="scratch_if_else"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_wait_until"></block>
+    <block type="scratch_stop_this"></block>
+  </category>
+  <!-- SENSING (includes boolean blocks) -->
+  <category name="Sensing" colour="#2ca5e2">
+    <block type="scratch_key_pressed"></block>
+    <block type="scratch_mouse_down"></block>
+    <block type="scratch_mouse_up"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_mouse_x"></block>
+    <block type="scratch_mouse_y"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_touching_edge"></block>
+    <block type="scratch_distance_to"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_set_drag_mode"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_ask"></block>
+    <block type="scratch_answer"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_timer"></block>
+    <block type="scratch_reset_timer"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_is_loud"></block>
+    <sep gap="24"></sep>
+    <block type="scratch_bool_key_pressed"></block>
+    <block type="scratch_bool_touching_sprite"></block>
+    <block type="scratch_bool_touching_color"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_bool_received_msg"></block>
+    <block type="scratch_bool_mouse_down"></block>
+    <block type="scratch_bool_sprite_clicked"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_bool_less_than_fps"></block>
+    <block type="scratch_bool_more_than_fps"></block>
+  </category>
+  <!-- OPERATORS -->
+  <category name="Math" colour="#5cb712">
+    <block type="scratch_add"></block>
+    <block type="scratch_subtract"></block>
+    <block type="scratch_multiply"></block>
+    <block type="scratch_divide"></block>
+    <block type="scratch_mod"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_round"></block>
+    <block type="scratch_mathop"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_random"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_number"></block>
+    <sep gap="24"></sep>
+    <block type="scratch_less_than"></block>
+    <block type="scratch_equals"></block>
+    <block type="scratch_greater_than"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_and"></block>
+    <block type="scratch_or"></block>
+    <block type="scratch_not"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_true"></block>
+    <block type="scratch_false"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_join"></block>
+    <block type="scratch_letter_of"></block>
+    <block type="scratch_length"></block>
+  </category>
+  <!-- FILE -->
+  <category name="File" colour="#978500">
+    <block type="scratch_file_read"></block>
+    <block type="scratch_file_write"></block>
+    <block type="scratch_file_append"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_file_download"></block>
+    <block type="scratch_file_prompt_text"></block>
+  </category>
+  <!-- VARIABLES -->
+  <category name="Variables" colour="#ee7d16" custom="VARIABLE">
+  </category>
+  <!-- PEN -->
+  <category name="Pen" colour="#0e9a6c">
+    <block type="scratch_pen_clear"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_pen_down"></block>
+    <block type="scratch_pen_up"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_pen_set_color"></block>
+    <block type="scratch_pen_change_size"><value name="N"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <block type="scratch_pen_set_size"><value name="N"><shadow type="math_number"><field name="NUM">1</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_stamp"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_pen_draw_line"><value name="X"><shadow type="math_number"><field name="NUM">100</field></shadow></value><value name="Y"><shadow type="math_number"><field name="NUM">100</field></shadow></value></block>
+    <block type="scratch_pen_draw_rect"><value name="W"><shadow type="math_number"><field name="NUM">50</field></shadow></value><value name="H"><shadow type="math_number"><field name="NUM">50</field></shadow></value></block>
+    <block type="scratch_pen_draw_circle"><value name="R"><shadow type="math_number"><field name="NUM">25</field></shadow></value></block>
+    <sep gap="16"></sep>
+    <block type="scratch_pen_erase_all"></block>
+  </category>
+  <!-- LOGS (dark red) -->
+  <category name="Logs" colour="#8B0000">
+    <block type="scratch_log"></block>
+    <block type="scratch_log_value"></block>
+  </category>
+  <!-- LIBRARY (preset scripts) -->
+  <category name="Library" colour="#632d99">
+    <block type="scratch_lib_player_controls"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_lib_platform_lr"></block>
+    <block type="scratch_lib_platform_ud"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_lib_ai_chase"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_lib_mobile_controls"></block>
+    <sep gap="16"></sep>
+    <block type="scratch_lib_platform_rotate"></block>
+    <sep gap="16"></sep>
+    <label text="── Actions ──"></label>
+    <block type="scratch_lib_gravity_jump"></block>
+    <block type="scratch_lib_follow_mouse"></block>
+    <block type="scratch_lib_camera_shake"></block>
+    <block type="scratch_lib_spawn_at"></block>
+    <sep gap="16"></sep>
+    <label text="── Timer ──"></label>
+    <block type="scratch_lib_countdown"></block>
+    <sep gap="16"></sep>
+    <label text="── Custom Blocks ──"></label>
+    <block type="scratch_lib_define"></block>
+    <block type="scratch_lib_call"></block>
+  </category>
+</xml>
+
+<!-- ═══════════════ EXTENSION PICKER MODAL ═══════════════ -->
+<div id="ext-picker-overlay" style="display:none;" onclick="closeExtPicker(event)">
+  <div id="ext-picker-box">
+    <div id="ext-picker-title">Choose an Extension</div>
+    <div id="ext-picker-grid">
+      <div class="ext-card" onclick="addExtension('html')">
+        <div class="ext-icon">🌐</div>
+        <div class="ext-name">HTML</div>
+        <div class="ext-desc">Create & modify HTML elements</div>
+      </div>
+      <div class="ext-card" onclick="addExtension('iframe')">
+        <div class="ext-icon">🖼️</div>
+        <div class="ext-name">iframe</div>
+        <div class="ext-desc">Embed external web pages</div>
+      </div>
+      <div class="ext-card" onclick="addExtension('3d')">
+        <div class="ext-icon">🧊</div>
+        <div class="ext-name">3D Render</div>
+        <div class="ext-desc">Real 3D engine with meshes & lighting</div>
+      </div>
+      <div class="ext-card" onclick="addExtension('pen3d')">
+        <div class="ext-icon">✏️</div>
+        <div class="ext-name">Pen 3D</div>
+        <div class="ext-desc">Draw 3D lines & shapes with the pen</div>
+      </div>
+      <div class="ext-card" onclick="addExtension('camera')">
+        <div class="ext-icon">📷</div>
+        <div class="ext-name">Camera</div>
+        <div class="ext-desc">Webcam access blocks</div>
+      </div>
+      <div class="ext-card" onclick="addExtension('terminal')">
+        <div class="ext-icon">💻</div>
+        <div class="ext-name">Terminal NS-DOS 1.0</div>
+        <div class="ext-desc">Terminal emulator overlay</div>
+      </div>
+    </div>
+    <div id="ext-picker-footer">
+      <button class="clay-btn" onclick="closeExtPicker()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script src="blocks.js"></script>
+<script src="scratch.js"></script>
+<script src="netsite-components.js"></script>
+</body>
+</html>

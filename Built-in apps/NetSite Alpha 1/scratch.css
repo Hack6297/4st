@@ -1,0 +1,2656 @@
+/* ═══════════════════════════════════════════════════════════════
+   Scratch 1.0  —  Scratch 1.4 Clay / Win95-era UI
+   ═══════════════════════════════════════════════════════════════ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+@font-face {
+  font-family: 'Black Boys on Mopeds';
+  src: local('Black Boys on Mopeds'), local('BlackBoysOnMopeds');
+}
+
+body {
+  font-family: 'Black Boys on Mopeds', Helvetica, sans-serif;
+  font-size: 11px;
+  background: #747474;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  user-select: none;
+}
+
+/* Allow typing/selecting in all text inputs despite body user-select:none */
+input,
+select,
+textarea {
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* ─── SCROLLBARS (Scratch 1.4 thick 3D clay style) ─── */
+::-webkit-scrollbar {
+  width: 16px;
+  height: 16px;
+}
+
+::-webkit-scrollbar-track {
+  background: #c0c0c0;
+  border: 1px inset #808080;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(135deg, #e0e0e0 0%, #b0b0b0 40%, #909090 60%, #c8c8c8 100%);
+  border-top: 2px solid #f0f0f0;
+  border-left: 2px solid #f0f0f0;
+  border-right: 2px solid #606060;
+  border-bottom: 2px solid #606060;
+  border-radius: 2px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(135deg, #eeeeee 0%, #c0c0c0 50%, #a0a0a0 100%);
+}
+
+::-webkit-scrollbar-button {
+  background: linear-gradient(180deg, #e8e8e8 0%, #c0c0c0 40%, #a8a8a8 100%);
+  border-top: 2px solid #f0f0f0;
+  border-left: 2px solid #f0f0f0;
+  border-right: 2px solid #505050;
+  border-bottom: 2px solid #505050;
+  display: block;
+  height: 16px;
+  width: 16px;
+}
+
+::-webkit-scrollbar-button:hover {
+  background: linear-gradient(180deg, #f8f8f8 0%, #d0d0d0 100%);
+}
+
+::-webkit-scrollbar-corner {
+  background: #c0c0c0;
+}
+
+/* ─── GENERAL 3D CLAY BUTTON BASE ─── */
+.clay-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: bold;
+  font-size: 11px;
+  color: #1a1a1a;
+  border-radius: 6px;
+  padding: 4px 10px;
+
+  /* 3D clay shine effect */
+  background: linear-gradient(180deg,
+      #f5f5f5 0%,
+      #e0e0e0 30%,
+      #c5c5c5 60%,
+      #d8d8d8 80%,
+      #e8e8e8 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.15),
+    inset 1px 0 0 rgba(255, 255, 255, 0.6),
+    inset -1px 0 0 rgba(0, 0, 0, 0.1),
+    0 2px 4px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.25);
+  border-top: 2px solid #f8f8f8;
+  border-left: 2px solid #f0f0f0;
+  border-right: 2px solid #888888;
+  border-bottom: 2px solid #999999;
+  transition: all 0.05s;
+  position: relative;
+}
+
+.clay-btn:hover {
+  background: linear-gradient(180deg,
+      #ffffff 0%,
+      #eeeeee 30%,
+      #d8d8d8 60%,
+      #e8e8e8 80%,
+      #f4f4f4 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 1),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.1),
+    0 3px 6px rgba(0, 0, 0, 0.35),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.clay-btn:active {
+  background: linear-gradient(180deg,
+      #b8b8b8 0%,
+      #c8c8c8 40%,
+      #d0d0d0 100%);
+  box-shadow:
+    inset 0 2px 4px rgba(0, 0, 0, 0.3),
+    inset 1px 1px 3px rgba(0, 0, 0, 0.2),
+    0 1px 1px rgba(255, 255, 255, 0.5);
+  border-top: 2px solid #909090;
+  border-left: 2px solid #909090;
+  border-right: 2px solid #e8e8e8;
+  border-bottom: 2px solid #e0e0e0;
+  transform: translateY(1px);
+}
+
+/* ─── GREEN FLAG BUTTON (Scratch 1.0 style — square, bigger) ─── */
+.green-flag {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  padding: 3px;
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 50%, #c0c0c0 100%);
+  border-top: 2px solid #f0f0f0;
+  border-left: 2px solid #e8e8e8;
+  border-right: 2px solid #888;
+  border-bottom: 2px solid #888;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.green-flag:hover {
+  background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+}
+
+.green-flag:active {
+  background: linear-gradient(180deg, #b8b8b8 0%, #c8c8c8 100%);
+  border-top: 2px solid #888;
+  border-left: 2px solid #888;
+  border-right: 2px solid #e8e8e8;
+  border-bottom: 2px solid #e8e8e8;
+  transform: translateY(1px);
+}
+
+.green-flag img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+/* ─── STOP BUTTON (Scratch 1.0 style — square, bigger) ─── */
+.stop-btn {
+  width: 34px;
+  height: 34px;
+  border-radius: 0;
+  padding: 3px;
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 50%, #c0c0c0 100%);
+  border-top: 2px solid #f0f0f0;
+  border-left: 2px solid #e8e8e8;
+  border-right: 2px solid #888;
+  border-bottom: 2px solid #888;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.stop-btn:hover {
+  background: linear-gradient(180deg, #f0f0f0 0%, #e0e0e0 50%, #d0d0d0 100%);
+}
+
+.stop-btn:active {
+  background: linear-gradient(180deg, #b8b8b8 0%, #c8c8c8 100%);
+  border-top: 2px solid #888;
+  border-left: 2px solid #888;
+  border-right: 2px solid #e8e8e8;
+  border-bottom: 2px solid #e8e8e8;
+  transform: translateY(1px);
+}
+
+.stop-btn img {
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+}
+
+/* ─── MENU BAR (Scratch 1.4 clay style) ─── */
+#menubar {
+  height: 34px;
+  background: linear-gradient(180deg, #7fc0e8 0%, #4a90d9 40%, #2d6eb5 70%, #1a5294 100%);
+  border-bottom: 2px solid #0e3d6b;
+  border-top: 1px solid #a0d4f5;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  gap: 0;
+  position: relative;
+  z-index: 200;
+  flex-shrink: 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.25);
+}
+
+.menu-logo {
+  font-family: 'Black Boys on Mopeds', Arial, sans-serif;
+  font-weight: bold;
+  font-size: 16px;
+  color: #fff;
+  margin-right: 18px;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+  cursor: default;
+}
+
+.menu-items {
+  display: flex;
+  gap: 0;
+}
+
+.menu-item {
+  padding: 4px 12px;
+  cursor: pointer;
+  border-radius: 3px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+  transition: background 0.15s;
+}
+
+.menu-item:hover {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border-radius: 3px;
+}
+
+.menu-dropdown {
+  display: none;
+  position: absolute;
+  top: 34px;
+  left: 0;
+  background: #f5f5f5;
+  border: 1px solid #a0a0a0;
+  min-width: 180px;
+  z-index: 500;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 4px 4px;
+  padding: 2px 0;
+}
+
+.menu-dropdown.open {
+  display: block;
+}
+
+.menu-option {
+  padding: 4px 20px;
+  cursor: pointer;
+  font-size: 11px;
+  color: #111;
+}
+
+.menu-option:hover {
+  background: linear-gradient(180deg, #d4e8ff 0%, #a8c8ee 100%);
+  color: #000;
+}
+
+.menu-sep {
+  height: 1px;
+  background: #b0b0b0;
+  margin: 2px 4px;
+}
+
+/* ─── CUSTOM CONTEXT MENU (same look as user dropdown) ─── */
+.ctx-menu {
+  position: fixed;
+  background: #f5f5f5;
+  border: 1px solid #a0a0a0;
+  min-width: 160px;
+  z-index: 10000;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.25);
+  border-radius: 0 0 4px 4px;
+  padding: 2px 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+.ctx-opt {
+  padding: 4px 20px;
+  cursor: pointer;
+  color: #111;
+}
+
+.ctx-opt:hover {
+  background: linear-gradient(180deg, #d4e8ff 0%, #a8c8ee 100%);
+  color: #000;
+}
+
+.ctx-opt.ctx-danger {
+  color: #c00;
+}
+
+.ctx-opt.ctx-danger:hover {
+  background: linear-gradient(180deg, #ffd4d4 0%, #eea8a8 100%);
+  color: #900;
+}
+
+.ctx-sep {
+  height: 1px;
+  background: #b0b0b0;
+  margin: 2px 4px;
+}
+
+/* ─── MENU SPACER / AUTH AREA ─── */
+.menu-spacer {
+  flex: 1;
+}
+
+.menu-auth-btn {
+  padding: 3px 12px !important;
+  font-size: 11px !important;
+  margin-left: 4px;
+  color: #fff !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+  background: linear-gradient(180deg, #5090d0 0%, #3868aa 100%) !important;
+  border-color: #2a5080 !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 1px 3px rgba(0, 0, 0, 0.3) !important;
+}
+
+.menu-auth-btn:hover {
+  background: linear-gradient(180deg, #60a0e0 0%, #4878ba 100%) !important;
+}
+
+.menu-auth-btn.green {
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%) !important;
+  border-color: #2a6f2a !important;
+}
+
+.menu-auth-btn.green:hover {
+  background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%) !important;
+}
+
+/* ─── USER BADGE (logged in) ─── */
+#user-area {
+  position: relative;
+}
+
+#user-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+#user-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.user-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 3px;
+  image-rendering: pixelated;
+}
+
+.user-caret {
+  font-size: 10px;
+  opacity: 0.8;
+}
+
+#user-menu {
+  right: 0;
+  left: auto;
+  top: 30px;
+}
+
+/* ─── AUTH MODALS (Join / Login) — Scratch 2.0 welcome window ─── */
+.auth-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9000;
+  align-items: center;
+  justify-content: center;
+}
+
+.auth-overlay.open {
+  display: flex;
+}
+
+.auth-window {
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+  border: 3px outset #e0e0e0;
+  border-radius: 8px;
+  width: 380px;
+  min-height: 280px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.45);
+  overflow: hidden;
+}
+
+.auth-titlebar {
+  background: linear-gradient(180deg, #4a90d9 0%, #2d6eb5 100%);
+  color: #fff;
+  padding: 10px 16px;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.auth-close {
+  background: none !important;
+  border: none !important;
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0 4px;
+  box-shadow: none !important;
+}
+
+.auth-close:hover {
+  opacity: 0.7;
+}
+
+.auth-body {
+  padding: 20px 24px;
+}
+
+.auth-body label {
+  display: block;
+  font-size: 12px;
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 4px;
+  margin-top: 12px;
+}
+
+.auth-body label:first-child {
+  margin-top: 0;
+}
+
+.auth-body input[type="text"],
+.auth-body input[type="password"] {
+  width: 100%;
+  padding: 8px 10px;
+  font-size: 13px;
+  border: 2px inset #aaa;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.auth-body select {
+  padding: 6px 8px;
+  font-size: 12px;
+  border: 2px inset #aaa;
+  border-radius: 3px;
+  background: #fff;
+}
+
+.auth-date-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.auth-date-row select {
+  flex: 1;
+}
+
+.auth-next {
+  display: block;
+  margin-top: 16px;
+  padding: 8px 24px !important;
+  font-size: 13px !important;
+}
+
+.auth-next.green {
+  background: linear-gradient(180deg, #5cb85c 0%, #3d8b3d 100%) !important;
+  border-color: #2a6f2a !important;
+  color: #fff !important;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3) !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3), 0 2px 4px rgba(0, 0, 0, 0.25) !important;
+}
+
+.auth-next.green:hover {
+  background: linear-gradient(180deg, #6cc76c 0%, #4a9d4a 100%) !important;
+}
+
+/* ─── MAIN APP LAYOUT ─── */
+#app {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  background: #afafaf;
+  gap: 3px;
+  padding: 3px;
+}
+
+/* ─── EDITOR PANEL (left — Blockly) ─── */
+#editor-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 2px inset #888888;
+  background: #7E7E7E;
+  border-radius: 3px;
+  overflow: hidden;
+  min-width: 300px;
+}
+
+/* ─── RIGHT PANEL (stage + sprites) ─── */
+#right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  width: 492px;
+  flex-shrink: 0;
+  overflow-y: auto;
+}
+
+/* ─── STAGE CONTROLS ─── */
+#stage-controls {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 44px;
+  padding: 4px 6px;
+  background: linear-gradient(180deg, #838383 0%, #4f4f4f 100%);
+  border: 2px outset #e0e0e0;
+  border-radius: 4px;
+}
+
+.stage-mode-btns {
+  display: flex;
+  gap: 3px;
+  margin-left: 8px;
+}
+
+.mode-btn {
+  width: 34px;
+  height: 34px;
+  padding: 4px;
+  border-radius: 0;
+}
+
+.mode-btn.active {
+  background: linear-gradient(180deg, #b0b0b0 0%, #c8c8c8 50%, #d8d8d8 100%);
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #f8f8f8;
+  border-bottom: 2px solid #f0f0f0;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* ─── STAGE CONTAINER ─── */
+#stage-container {
+  position: relative;
+  border: 3px inset #707070;
+  background: #7f7f7f;
+  flex-shrink: 0;
+  line-height: 0;
+  box-shadow: inset 2px 2px 6px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+
+#stage {
+  display: block;
+  background: #ffffff;
+  cursor: crosshair;
+}
+
+/* ─── VARIABLE MONITORS ─── */
+#var-monitors {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.var-monitor {
+  position: absolute;
+  pointer-events: auto;
+  background: #ee7d16;
+  color: #fff;
+  font: bold 11px "Lucida Grande", "Helvetica Neue", Arial, sans-serif;
+  border-radius: 4px;
+  padding: 2px 6px;
+  box-shadow: 1px 1px 3px rgba(0, 0, 0, 0.4);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.var-monitor .var-label {
+  margin-right: 4px;
+  opacity: 0.85;
+  font-weight: normal;
+}
+
+.var-monitor .var-value {
+  background: #c45e00;
+  border-radius: 3px;
+  padding: 1px 5px;
+  display: inline-block;
+  min-width: 30px;
+  text-align: center;
+}
+
+/* ─── SPRITE PANEL ─── */
+#sprite-panel {
+  flex: 1;
+  background: linear-gradient(180deg, #737373 0%, #565656 100%);
+  border: 2px inset #888888;
+  border-radius: 3px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 80px;
+}
+
+#sprite-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 6px;
+  background: linear-gradient(180deg, #818181 0%, #565656 100%);
+  border-bottom: 1px solid #909090;
+}
+
+.panel-title {
+  font-weight: bold;
+  color: #333;
+  font-size: 11px;
+  flex: 1;
+}
+
+.small-btn {
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  height: 20px;
+}
+
+#sprite-list {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 4px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-content: flex-start;
+}
+
+.sprite-entry {
+  width: 68px;
+  height: 68px;
+  border: 2px outset #a1a1a1;
+  background: #c1c1c1;
+  border-radius: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 10px;
+  text-align: center;
+  overflow: hidden;
+  transition: border 0.1s;
+}
+
+.sprite-entry:hover {
+  border-color: #4C97FF;
+}
+
+.sprite-entry.selected {
+  border: 2px solid #4C97FF;
+  background: #e8f0ff;
+  box-shadow: 0 0 4px rgba(76, 151, 255, 0.5);
+}
+
+.sprite-entry canvas {
+  width: 48px;
+  height: 48px;
+  border: 1px solid #ccc;
+  border-radius: 2px;
+  background: white;
+}
+
+.sprite-entry .sprite-name {
+  font-size: 9px;
+  color: #333;
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 64px;
+}
+
+/* center-panel removed — replaced by #editor-panel */
+
+/* ─── TABS (Scratch 1.4 clay tabs) ─── */
+#editor-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 3px 5px 0 5px;
+  background: linear-gradient(180deg, #5a5a5a 0%, #4e4e4e 100%);
+  border-bottom: 2px solid #3a3a3a;
+  flex-shrink: 0;
+}
+
+.tab-btn {
+  padding: 4px 16px;
+  font-size: 11px;
+  font-weight: bold;
+  cursor: pointer;
+  border: 2px solid #555;
+  border-bottom: 2px solid #7E7E7E;
+  border-radius: 6px 6px 0 0;
+  background: linear-gradient(180deg,
+      #7a7a7a 0%, #686868 50%, #606060 100%);
+  color: #e8e8e8;
+  position: relative;
+  bottom: -2px;
+  transition: background 0.1s;
+  outline: none;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.2),
+    inset 1px 0 0 rgba(255, 255, 255, 0.1);
+}
+
+.tab-btn:hover {
+  background: linear-gradient(180deg, #888 0%, #777 100%);
+}
+
+.tab-btn.active {
+  background: linear-gradient(180deg, #8e8e8e 0%, #828282 50%, #7E7E7E 100%);
+  border-color: #505050;
+  border-bottom-color: #7E7E7E;
+  color: #fff;
+  z-index: 1;
+}
+
+/* ─── TAB CONTENT ─── */
+.tab-content {
+  display: none;
+  flex: 1;
+  overflow: hidden;
+}
+
+.tab-content.active {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+/* ─── BLOCKLY DIV ─── */
+#blockly-div {
+  flex: 1;
+  width: 100%;
+  min-height: 300px;
+  background: #7E7E7E;
+  overflow: hidden;
+}
+
+/* ─── STATUS BAR ─── */
+#statusbar {
+  height: 20px;
+  background: linear-gradient(180deg, #d0d0d0 0%, #c0c0c0 100%);
+  border-top: 2px solid #909090;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  flex-shrink: 0;
+  gap: 0;
+}
+
+#status-msg {
+  font-size: 10px;
+  color: #222;
+  flex: 1;
+}
+
+#status-right {
+  font-size: 10px;
+  color: #666;
+  border-left: 1px inset #999;
+  padding-left: 8px;
+}
+
+/* ─── BLOCKLY OVERRIDE: dark grey workspace ─── */
+.blocklyWorkspace {
+  background: #7E7E7E !important;
+}
+
+.blocklyMainBackground {
+  fill: #7E7E7E !important;
+}
+
+/* Grid dots on dark bg */
+.blocklyGridLine {
+  stroke: #3b3b3b !important;
+}
+
+/* Toolbox panel: 2-column grid in top-left */
+.blocklyToolboxDiv {
+  position: absolute !important;
+  left: 0 !important;
+  top: 0 !important;
+  z-index: 9999 !important;
+  width: 0 !important;
+  height: 0 !important;
+  overflow: visible !important;
+}
+
+.blocklyToolboxContents {
+  width: 243px !important;
+  height: 190px !important;
+  background: linear-gradient(180deg, #6d6d6d 0%, #6d6d6d 100%) !important;
+  border-right: 2px solid #8b8b8b !important;
+  border-bottom: 2px solid #8b8b8b !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  flex-wrap: wrap !important;
+  padding: 4px !important;
+  row-gap: 2px !important;
+  column-gap: 4px !important;
+  align-content: flex-start !important;
+  box-sizing: border-box !important;
+}
+
+/* Dynamically expand width to 320px to fit 3rd column of extensions */
+#blockly-div.has-extensions .blocklyToolboxContents {
+  width: 320px !important;
+}
+
+.blocklyTreeRow {
+  width: 100px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border-top: 1px solid #777 !important;
+  border-right: 1px solid #3a3a3a !important;
+  border-bottom: 1px solid #3a3a3a !important;
+  /* Exclude border-left entirely so dynamic inline block category color applies */
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  cursor: pointer !important;
+  border-radius: 12px !important;
+  background: linear-gradient(180deg, #606060 0%, #4a4a4a 100%) !important;
+  box-sizing: border-box !important;
+}
+
+.blocklyTreeIcon {
+  display: none !important;
+}
+
+.blocklyTreeRow:hover {
+  background: linear-gradient(180deg, #707070 0%, #606060 100%) !important;
+}
+
+.blocklyTreeSelected {
+  background: linear-gradient(180deg, #316ac5 0%, #204b90 100%) !important;
+  border-color: #204b90 !important;
+  border-top-color: #5588e6 !important;
+  border-radius: 4px !important;
+}
+
+.blocklyTreeSelected .blocklyTreeLabel {
+  color: white !important;
+}
+
+.blocklyTreeLabel {
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 11px !important;
+  font-weight: bold !important;
+  color: #e8e8e8 !important;
+  text-align: left !important;
+  padding-left: 6px !important;
+  width: 100% !important;
+}
+
+/* Flyout panel: slightly lighter than workspace */
+.blocklyFlyoutBackground {
+  fill: #585858 !important;
+  fill-opacity: 0.97 !important;
+  width: 243px !important;
+}
+
+#blockly-div.has-extensions .blocklyFlyoutBackground {
+  width: 320px !important;
+}
+
+/* Force blockly trashcan to be visible if it was hidden or camouflaged */
+.blocklyTrash {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  z-index: 9999 !important;
+}
+
+
+/* ─── SPRITE PICKER MODAL ─── */
+#sprite-picker-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+}
+
+#sprite-picker-overlay.open {
+  display: flex;
+}
+
+#sprite-picker-box {
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+  border: 3px outset #e0e0e0;
+  border-radius: 6px;
+  width: 540px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 4px 4px 14px rgba(0, 0, 0, 0.55);
+}
+
+#sprite-picker-title {
+  padding: 7px 14px;
+  font-weight: bold;
+  font-size: 12px;
+  color: #111;
+  background: linear-gradient(180deg, #d8d8d8 0%, #c8c8c8 100%);
+  border-bottom: 2px solid #999;
+  border-radius: 4px 4px 0 0;
+}
+
+#sprite-picker-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.picker-item {
+  width: 76px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  padding: 5px;
+  border: 2px solid transparent;
+  border-radius: 5px;
+  background: rgba(255, 255, 255, 0.3);
+  transition: border 0.1s, background 0.1s;
+}
+
+.picker-item:hover {
+  border-color: #4C97FF;
+  background: rgba(76, 151, 255, 0.12);
+}
+
+.picker-item img {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  border: 1px solid #bbb;
+  border-radius: 3px;
+  background: white;
+  image-rendering: pixelated;
+}
+
+.picker-item .picker-name {
+  font-size: 9px;
+  color: #333;
+  margin-top: 3px;
+  text-align: center;
+  word-break: break-word;
+  max-width: 72px;
+}
+
+#sprite-picker-footer {
+  padding: 8px 12px;
+  border-top: 1px solid #aaa;
+  display: flex;
+  justify-content: flex-end;
+  background: linear-gradient(180deg, #d0d0d0 0%, #c4c4c4 100%);
+  border-radius: 0 0 4px 4px;
+}
+
+/* ─── INSET PANEL FRAME (helper class) ─── */
+.inset-panel {
+  border: 2px inset #909090;
+  background: #e8e8e8;
+  border-radius: 2px;
+}
+
+/* ─── ABOUT DIALOG ─── */
+#about-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 1000;
+  align-items: center;
+  justify-content: center;
+}
+
+#about-overlay.open {
+  display: flex;
+}
+
+#about-box {
+  background: linear-gradient(180deg, #ececec 0%, #d8d8d8 100%);
+  border: 3px outset #e0e0e0;
+  border-radius: 6px;
+  padding: 20px 28px;
+  min-width: 300px;
+  text-align: center;
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+#about-box h2 {
+  font-size: 16px;
+  color: #ff6600;
+  margin-bottom: 8px;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.8);
+}
+
+#about-box p {
+  font-size: 11px;
+  color: #333;
+  margin: 4px 0;
+}
+
+#about-box .close-btn {
+  margin-top: 14px;
+  padding: 4px 24px;
+}
+
+/* ─── BASE STYLES (own clay 1.4 look — no external CSS framework) ─── */
+body,
+html {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+  margin: 0;
+  padding: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 11px;
+}
+
+button {
+  cursor: pointer;
+  border: none;
+  outline: none;
+  background: none;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="password"],
+textarea,
+select {
+  border: 1px solid #999;
+  background: #fff;
+  padding: 2px 4px;
+  border-radius: 2px;
+}
+
+input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* ─── INFO / PROPERTIES PANEL ─── */
+#info-panel {
+  background: linear-gradient(180deg, #6e6e6e 0%, #4b4b4b 100%);
+  border: 2px inset #888888;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+#info-panel-header {
+  display: flex;
+  align-items: center;
+  padding: 3px 6px;
+  background: linear-gradient(180deg, #7d7d7d 0%, #575757 100%);
+  border-bottom: 1px solid #909090;
+}
+
+#info-panel-body {
+  padding: 4px 6px;
+  overflow-y: auto;
+  max-height: 110px;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.info-row label {
+  font-size: 10px;
+  font-weight: bold;
+  color: #333;
+  min-width: 72px;
+  white-space: nowrap;
+}
+
+.info-row input[type="text"],
+.info-row input[type="number"] {
+  flex: 1;
+  height: 18px;
+  font-size: 10px;
+  padding: 1px 3px;
+  border: 1px solid #999;
+  background: #fff;
+  min-width: 40px;
+  max-width: 120px;
+}
+
+.info-row select {
+  flex: 1;
+  height: 20px;
+  font-size: 10px;
+  max-width: 120px;
+}
+
+/* ─── CLAY 1.4 CHECKBOX ─── */
+.win7-checkbox {
+  display: inline-flex;
+  align-items: center;
+  position: relative;
+  cursor: pointer;
+  margin: 0;
+  padding: 0;
+}
+
+.win7-checkbox input[type="checkbox"] {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.win7-checkmark {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  background: linear-gradient(180deg, #f0f0f0 0%, #ffffff 100%);
+  border: 1px solid #8e8f8f;
+  border-radius: 1px;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.15);
+  position: relative;
+}
+
+.win7-checkbox input:checked+.win7-checkmark {
+  background: linear-gradient(180deg, #e0eef9 0%, #d8e6f5 100%);
+  border-color: #1b3dff;
+}
+
+.win7-checkbox input:checked+.win7-checkmark::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 0px;
+  width: 5px;
+  height: 8px;
+  border: solid #1a5a1a;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.win7-checkbox:hover .win7-checkmark {
+  border-color: #2b86dc;
+  background: linear-gradient(180deg, #e8f0fb 0%, #dde8f6 100%);
+}
+
+.info-section-toggle {
+  cursor: pointer;
+  user-select: none;
+}
+
+.info-section-toggle label {
+  cursor: pointer;
+  color: #2266aa;
+}
+
+#info-position-section {
+  padding-left: 12px;
+}
+
+/* ─── OBJECT PICKER MODAL ─── */
+#object-picker-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 900;
+  align-items: center;
+  justify-content: center;
+}
+
+#object-picker-overlay.open {
+  display: flex;
+}
+
+.picker-grid-inner {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* ─── COSTUME EDITOR ─── */
+#costumes-editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+#costume-sidebar {
+  width: 110px;
+  background: #585858;
+  border-right: 2px solid #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#costume-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.costume-thumb {
+  width: 90px;
+  height: 68px;
+  border: 2px solid #777;
+  border-radius: 3px;
+  background: white;
+  cursor: pointer;
+  margin-bottom: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+.costume-thumb.drag-over {
+  border-top: 4px solid #4C97FF;
+}
+
+.costume-thumb-btns {
+  display: none;
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  gap: 2px;
+}
+
+.costume-thumb:hover .costume-thumb-btns {
+  display: flex;
+}
+
+.costume-thumb-btns button {
+  background: rgba(0, 0, 0, 0.6);
+  color: white;
+  border: none;
+  font-size: 10px;
+  padding: 2px 4px;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.costume-thumb-btns button:hover {
+  background: #ff4c4c;
+}
+
+.costume-thumb-btns button.dupe-btn:hover {
+  background: #4C97FF;
+}
+
+.costume-thumb.selected {
+  border-color: #4C97FF;
+  box-shadow: 0 0 4px rgba(76, 151, 255, 0.5);
+}
+
+.costume-thumb canvas {
+  width: 84px;
+  height: 50px;
+  background: white;
+  image-rendering: pixelated;
+}
+
+.costume-thumb-name {
+  font-size: 8px;
+  color: #ccc;
+  margin-top: 1px;
+  max-width: 86px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#costume-sidebar-btns {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-top: 1px solid #3a3a3a;
+}
+
+#costume-sidebar-btns .small-btn {
+  font-size: 9px;
+  padding: 2px 5px;
+}
+
+#costume-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #6e6e6e;
+  overflow: hidden;
+}
+
+/* ── Scratch 1.0 Paint Editor Layout ── */
+#paint-layout {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+/* Tool palette: 2-column grid on the left */
+#paint-tools {
+  display: grid;
+  grid-template-columns: repeat(2, 30px);
+  grid-auto-rows: 28px;
+  gap: 2px;
+  padding: 4px;
+  background: linear-gradient(180deg, #5a5a5a 0%, #4e4e4e 100%);
+  border-right: 2px solid #3a3a3a;
+  align-content: start;
+}
+
+.paint-tool {
+  width: 30px;
+  height: 28px;
+  padding: 0;
+  font-size: 13px;
+  border-radius: 3px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.paint-tool.active {
+  background: linear-gradient(180deg, #b0b0b0 0%, #c8c8c8 50%, #d8d8d8 100%);
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #f8f8f8;
+  border-bottom: 2px solid #f0f0f0;
+  box-shadow: inset 1px 1px 3px rgba(0, 0, 0, 0.25);
+}
+
+/* Right side: options bar + canvas */
+#paint-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Options bar above canvas */
+#paint-options {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: linear-gradient(180deg, #5a5a5a 0%, #4e4e4e 100%);
+  border-bottom: 1px solid #3a3a3a;
+  flex-shrink: 0;
+}
+
+.paint-opt-label {
+  font-size: 10px;
+  color: #ccc;
+}
+
+.paint-opt-sep {
+  width: 1px;
+  height: 18px;
+  background: #3a3a3a;
+  margin: 0 4px;
+}
+
+#costume-color {
+  width: 24px;
+  height: 20px;
+  border: 1px solid #555;
+  padding: 0;
+  cursor: pointer;
+}
+
+#costume-brush-size-label {
+  font-size: 10px;
+  color: #ccc;
+  margin-left: 2px;
+}
+
+#costume-canvas-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  overflow: auto;
+}
+
+#costume-canvas {
+  border: 2px inset #555;
+  background: white;
+  cursor: crosshair;
+  image-rendering: pixelated;
+}
+
+/* ─── SOUNDS EDITOR ─── */
+#sounds-editor {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+#sound-sidebar {
+  width: 130px;
+  background: #585858;
+  border-right: 2px solid #3a3a3a;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+#sound-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.sound-entry {
+  padding: 4px 6px;
+  border: 1px solid #666;
+  border-radius: 3px;
+  background: #707070;
+  color: #eee;
+  font-size: 10px;
+  cursor: pointer;
+  margin-bottom: 3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sound-entry.selected {
+  background: #4C97FF;
+  border-color: #3a78cc;
+  color: white;
+}
+
+#sound-sidebar-btns {
+  display: flex;
+  gap: 2px;
+  padding: 4px;
+  border-top: 1px solid #3a3a3a;
+}
+
+#sound-sidebar-btns .small-btn {
+  font-size: 9px;
+  padding: 2px 5px;
+}
+
+#sound-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #6e6e6e;
+  padding: 12px;
+}
+
+#sound-waveform {
+  border: 2px inset #555;
+  background: #1a1a2e;
+  border-radius: 3px;
+  width: 100%;
+  max-width: 500px;
+}
+
+#sound-controls {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BLOCKLY ISOLATION — ensure Blockly UI elements work properly
+   ═══════════════════════════════════════════════════════════ */
+
+/* App inputs must be typeable */
+#info-panel input,
+#info-panel select,
+#info-panel textarea,
+#costumes-editor input,
+#sounds-editor input,
+#sprite-picker-box input,
+#object-picker-overlay input {
+  pointer-events: auto !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+/* Blockly widget / dropdown isolation */
+.blocklyToolboxDiv button,
+.blocklyWidgetDiv button,
+.blocklyDropDownDiv button,
+.blocklyTooltipDiv button {
+  all: revert;
+  cursor: pointer;
+}
+
+.blocklyWidgetDiv input,
+.blocklyWidgetDiv select,
+.blocklyDropDownDiv input,
+.blocklyDropDownDiv select {
+  all: revert;
+  pointer-events: auto !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+}
+
+.blocklyWidgetDiv,
+.blocklyWidgetDiv * {
+  pointer-events: auto !important;
+}
+
+.blocklyHtmlInput {
+  border: 1px solid #888 !important;
+  background: #fff !important;
+  color: #000 !important;
+  font-family: sans-serif !important;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  pointer-events: auto !important;
+  padding: 2px 4px !important;
+}
+
+.blocklyToolboxDiv,
+.blocklyToolboxDiv *,
+.blocklyFlyout *,
+.blocklyWidgetDiv *,
+.blocklyDropDownDiv * {
+  box-sizing: content-box;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   MOBILE CONTROLS OVERLAY
+   ═══════════════════════════════════════════════════════════ */
+#mobile-ctrl-overlay button {
+  all: unset;
+  display: inline-block;
+  width: 38px;
+  height: 38px;
+  border-radius: 7px;
+  border: 2px solid rgba(0, 0, 0, .3);
+  background: rgba(255, 255, 255, .55);
+  font-size: 17px;
+  cursor: pointer;
+  user-select: none;
+  touch-action: none;
+  line-height: 38px;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+#mobile-ctrl-overlay button:active {
+  background: rgba(255, 255, 255, .85);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   EXTENSION PICKER MODAL
+   ═══════════════════════════════════════════════════════════ */
+#ext-picker-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 5000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#ext-picker-box {
+  background: linear-gradient(180deg, #e8e8e8 0%, #d0d0d0 100%);
+  border: 3px outset #e0e0e0;
+  border-radius: 6px;
+  width: 520px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+#ext-picker-title {
+  padding: 8px 12px;
+  font-weight: bold;
+  font-size: 13px;
+  color: #222;
+  border-bottom: 1px solid #aaa;
+  background: linear-gradient(180deg, #e0e0e0 0%, #c8c8c8 100%);
+}
+
+#ext-picker-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  padding: 12px;
+  overflow-y: auto;
+}
+
+.ext-card {
+  background: #fff;
+  border: 2px outset #d0d0d0;
+  border-radius: 4px;
+  padding: 10px 6px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.ext-card:hover {
+  background: #e8f0ff;
+  border-color: #4C97FF;
+  box-shadow: 0 2px 6px rgba(76, 151, 255, 0.3);
+}
+
+.ext-icon {
+  font-size: 28px;
+  margin-bottom: 4px;
+}
+
+.ext-name {
+  font-weight: bold;
+  font-size: 11px;
+  color: #222;
+}
+
+.ext-desc {
+  font-size: 9px;
+  color: #666;
+  margin-top: 2px;
+}
+
+#ext-picker-footer {
+  padding: 6px 12px;
+  display: flex;
+  justify-content: flex-end;
+  border-top: 1px solid #aaa;
+}
+
+/* Extension add button at bottom of toolbox */
+#ext-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  padding: 8px 0;
+  margin-top: 6px;
+  background: linear-gradient(180deg, #4060d0 0%, #3050b0 100%);
+  color: #fff;
+  font-weight: bold;
+  font-size: 12px;
+  border: 2px outset #5070e0;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#ext-add-btn:hover {
+  background: linear-gradient(180deg, #ffffff 0%, #858585 100%);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   BLOCKLY INPUT OVERRIDES
+   ═══════════════════════════════════════════════════════════ */
+.blocklyWidgetDiv input,
+.blocklyWidgetDiv textarea,
+.blocklyWidgetDiv select {
+  all: revert !important;
+}
+
+.blocklyWidgetDiv input.blocklyHtmlInput {
+  border: none !important;
+  border-radius: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+  background: #fff !important;
+  color: #000 !important;
+  font-family: sans-serif !important;
+  font-size: 11pt !important;
+  padding: 0 1px !important;
+  margin: 0 !important;
+  min-height: 0 !important;
+  min-width: 0 !important;
+  box-sizing: border-box !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Context menu (rendered in .blocklyWidgetDiv) */
+.blocklyWidgetDiv {
+  z-index: 10000 !important;
+  pointer-events: auto !important;
+}
+
+.blocklyWidgetDiv .blocklyMenu {
+  background: #f5f5f5 !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 4px !important;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3) !important;
+  padding: 4px 0 !important;
+  min-width: 160px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItem {
+  padding: 6px 20px !important;
+  cursor: pointer !important;
+  color: #111 !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItem:hover,
+.blocklyWidgetDiv .blocklyMenuItemHighlight {
+  background: linear-gradient(180deg, #d4e8ff 0%, #a8c8ee 100%) !important;
+}
+
+.blocklyWidgetDiv .blocklyMenuItemDisabled {
+  color: #999 !important;
+  cursor: default !important;
+}
+
+.blocklyDropDownDiv {
+  position: fixed !important;
+  z-index: 10000 !important;
+}
+
+.blocklyDropDownDiv .blocklyMenu {
+  background: #f5f5f5 !important;
+  border: 1px solid #a0a0a0 !important;
+  border-radius: 4px !important;
+  box-shadow: 2px 3px 8px rgba(0, 0, 0, 0.3) !important;
+  padding: 4px 0 !important;
+  min-width: 100px !important;
+  font-family: Arial, Helvetica, sans-serif !important;
+  font-size: 12px !important;
+  max-height: 300px !important;
+  overflow-y: auto !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItem {
+  padding: 6px 20px !important;
+  cursor: pointer !important;
+  color: #111 !important;
+  white-space: nowrap !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItem:hover,
+.blocklyDropDownDiv .blocklyMenuItemHighlight {
+  background: linear-gradient(180deg, #d4e8ff 0%, #a8c8ee 100%) !important;
+}
+
+.blocklyDropDownDiv .blocklyMenuItemDisabled {
+  color: #999 !important;
+  cursor: default !important;
+}
+
+.blocklyDropDownDiv * {
+  box-sizing: border-box;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   SCRATCH 2.0 BLOCKLY OVERRIDES  (compact Zelos renderer + clay bevel)
+   Zelos uses a single SVG path per block; the clay/raised look
+   comes from the scratch2Bevel SVG filter.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Root SVG font ── */
+.blocklySvg {
+  font-family: Lucida Grande, Verdana, Arial, DejaVu Sans, sans-serif;
+}
+
+/* ── Block text: bold white 9px with dark drop-shadow ── */
+.blocklyText {
+  font-family: Lucida Grande, Verdana, Arial, DejaVu Sans, sans-serif !important;
+  font-weight: bold !important;
+  font-size: 9px !important;
+  fill: #fff !important;
+  word-spacing: 0px !important;
+  filter: url(#scratch2TextShadow) !important;
+}
+
+/* ── Block body — clay bevel via SVG filter ── */
+.blocklyPath {
+  stroke: none !important;
+  stroke-width: 0 !important;
+  filter: url(#scratch2Bevel) !important;
+}
+
+/* Selected block: bright yellow outline */
+.blocklySelected>.blocklyPath {
+  stroke: #fc3 !important;
+  stroke-opacity: 1 !important;
+  stroke-width: 2px !important;
+}
+
+/* Dragging: slight transparency */
+.blocklyDragging>.blocklyPath {
+  fill-opacity: 0.88 !important;
+}
+
+/* Shadow / argument blocks: tinted, no bevel */
+.blocklyShadow>.blocklyPath {
+  fill-opacity: 0.55 !important;
+  stroke: none !important;
+  stroke-width: 0 !important;
+  filter: none !important;
+}
+
+/* ── Input fields — white rounded pills ── */
+.blocklyEditableText>.blocklyFieldRect {
+  fill: #fff !important;
+  rx: 10px !important;
+  ry: 10px !important;
+  stroke: none !important;
+  filter: url(#scratch2InputBevel) !important;
+}
+
+/* Text inside inputs: black, normal weight, 9px */
+.blocklyEditableText>.blocklyText {
+  fill: #000 !important;
+  font-weight: normal !important;
+  font-size: 9px !important;
+  filter: none !important;
+  word-spacing: 0 !important;
+}
+
+/* Non-editable field text (labels) stays white & bold */
+.blocklyNonEditableField>.blocklyText {
+  fill: #fff !important;
+  font-weight: bold !important;
+}
+
+/* ── Dropdown fields — darker filter ── */
+.blocklyDropdownRect {
+  rx: 8px !important;
+  ry: 8px !important;
+  filter: url(#scratch2Dark) !important;
+}
+
+.blocklyDropdownText {
+  fill: #000 !important;
+  font-weight: normal !important;
+  font-size: 9px !important;
+  filter: none !important;
+}
+
+text.blocklyText.blocklyDropdownText {
+  fill: #000 !important;
+  filter: none !important;
+}
+
+/* ── Dropdown menu popup — black text, compact rows ── */
+.blocklyDropDownDiv .blocklyMenuItemContent,
+.blocklyDropDownDiv .goog-menuitem-content,
+.blocklyDropDownDiv .blocklyMenuItem {
+  color: #000 !important;
+  font-family: Lucida Grande, Verdana, Arial, DejaVu Sans, sans-serif !important;
+  font-size: 10px !important;
+  font-weight: normal !important;
+  padding: 1px 6px !important;
+  line-height: 16px !important;
+}
+
+.blocklyDropDownDiv .goog-menuitem,
+.blocklyDropDownDiv .blocklyMenuItem {
+  padding: 1px 6px !important;
+  min-height: 0 !important;
+}
+
+.blocklyDropDownDiv {
+  max-height: 200px !important;
+}
+
+.blocklyWidgetDiv .blocklyMenu {
+  padding: 2px 0 !important;
+}
+
+.blocklyWidgetDiv .goog-menuitem,
+.blocklyWidgetDiv .blocklyMenuItem {
+  padding: 1px 6px !important;
+  min-height: 0 !important;
+  color: #000 !important;
+  font-size: 11px !important;
+  line-height: 18px !important;
+}
+
+/* ── HTML text editor overlay ── */
+.blocklyHtmlInput {
+  font-family: Lucida Grande, Verdana, Arial, DejaVu Sans, sans-serif !important;
+  font-size: 10px !important;
+  color: #000 !important;
+  border: 1px solid #aaa !important;
+  border-radius: 10px !important;
+  padding: 1px 5px !important;
+  background: #fff !important;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.12) !important;
+}
+
+/* ── Toolbox & Flyout ── */
+.blocklyToolboxDiv {
+  font-family: Lucida Grande, Verdana, Arial, DejaVu Sans, sans-serif !important;
+  font-weight: bold !important;
+}
+
+.blocklyTreeLabel {
+  font-size: 12px !important;
+}
+
+/* ── Scrollbar ── */
+.blocklyScrollbarHandle {
+  rx: 4px !important;
+  ry: 4px !important;
+}
+
+/* ── Connection / insertion highlights ── */
+.blocklyHighlightedConnectionPath {
+  stroke: #fc3 !important;
+  stroke-width: 4px !important;
+}
+
+/* NetSite classic 2008 editor skin */
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: #d5d5d5;
+  color: #333;
+}
+#menubar {
+  height: 48px;
+  padding: 0 10px;
+  gap: 0;
+  background: linear-gradient(#fff, #ededed);
+  border-top: 0;
+  border-bottom: 1px solid #999;
+  box-shadow: 0 1px 3px rgba(0,0,0,.18);
+}
+.menu-logo {
+  display: flex;
+  align-items: center;
+  margin-right: 20px;
+  color: #111;
+  font: bold 23px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: -1.5px;
+  text-decoration: none;
+  text-shadow: none;
+}
+.menu-logo img {
+  width: auto;
+  height: 29px;
+  image-rendering: pixelated;
+  filter: drop-shadow(0 3px 0 rgba(0,0,0,.45)) drop-shadow(0 6px 5px rgba(0,0,0,.65));
+}
+.menu-logo .netsite-site {
+  margin-left: 2px;
+  padding: 3px 5px 4px;
+  color: #fff;
+  background: linear-gradient(#e72b2b, #a90000);
+  border: 1px solid #8e0000;
+  border-radius: 5px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.5);
+}
+.menu-logo small {
+  margin-left: 7px;
+  color: #666;
+  font-size: 10px;
+  font-weight: normal;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+.menu-item {
+  height: 48px;
+  padding: 17px 12px 0;
+  color: #03c;
+  font: bold 12px Arial, sans-serif;
+  border-left: 1px solid transparent;
+  border-right: 1px solid transparent;
+  border-radius: 0;
+  text-shadow: none;
+}
+.menu-item:hover {
+  color: #03c;
+  background: #e4edf7;
+  border-left-color: #bbc8d8;
+  border-right-color: #bbc8d8;
+  border-radius: 0;
+}
+.menu-dropdown { top: 47px; background: #fff; border-color: #888; border-radius: 0; }
+.menu-option { padding: 6px 20px; font-family: Arial, sans-serif; }
+.menu-option:hover { background: #dce8f6; }
+.clay-btn {
+  font-family: Arial, Helvetica, sans-serif;
+  border-radius: 2px;
+  background: linear-gradient(#fff, #d7d7d7);
+  border: 1px solid #888;
+  box-shadow: inset 0 1px #fff;
+}
+.clay-btn:hover { background: linear-gradient(#fff, #cbd9eb); box-shadow: inset 0 1px #fff; }
+.clay-btn:active { background: #c7c7c7; border: 1px solid #777; transform: none; box-shadow: inset 0 1px 2px rgba(0,0,0,.2); }
+.menu-auth-btn,
+.menu-auth-btn:hover {
+  height: 25px;
+  padding: 3px 12px !important;
+  color: #111 !important;
+  background: linear-gradient(#fff8b9, #e8cb42) !important;
+  border: 1px solid #aa901a !important;
+  border-radius: 3px !important;
+  box-shadow: inset 0 1px #fff !important;
+  text-shadow: none !important;
+}
+#user-badge { color: #03c; text-shadow: none; }
+#app { gap: 6px; padding: 6px; background: #d5d5d5; }
+#editor-panel {
+  background: #f3f3f3;
+  border: 1px solid #888;
+  border-radius: 0;
+  box-shadow: 0 1px 2px rgba(0,0,0,.18);
+}
+#editor-tabs {
+  gap: 0;
+  min-height: 32px;
+  padding: 5px 5px 0;
+  background: linear-gradient(#678bb4, #3c6797);
+  border-bottom: 1px solid #294f7a;
+}
+.tab-btn {
+  bottom: -1px;
+  min-width: 82px;
+  padding: 6px 15px;
+  color: #fff;
+  background: #4d739e;
+  border: 1px solid #294f7a;
+  border-bottom-color: #294f7a;
+  border-radius: 4px 4px 0 0;
+  font-family: Arial, sans-serif;
+  text-shadow: 0 1px #294f7a;
+}
+.tab-btn:hover { background: #5d83ad; }
+.tab-btn.active {
+  color: #222;
+  background: #f3f3f3;
+  border-color: #294f7a;
+  border-bottom-color: #f3f3f3;
+  text-shadow: none;
+}
+#right-panel { gap: 6px; }
+#stage-controls {
+  height: 40px;
+  padding: 3px 6px;
+  background: linear-gradient(#f7f7f7, #d8d8d8);
+  border: 1px solid #888;
+  border-radius: 0;
+}
+.green-flag, .stop-btn {
+  width: 31px;
+  height: 30px;
+  padding: 2px;
+  background: linear-gradient(#fff, #d7d7d7);
+  border: 1px solid #888;
+  border-radius: 2px;
+  box-shadow: inset 0 1px #fff;
+}
+.green-flag:hover, .stop-btn:hover { background: linear-gradient(#fff, #cbd9eb); }
+#stage-container { border: 1px solid #666; border-radius: 0; box-shadow: 0 1px 3px rgba(0,0,0,.25); }
+#info-panel {
+  background: #eee;
+  border: 1px solid #888;
+  border-radius: 0;
+}
+#info-panel-header {
+  min-height: 25px;
+  padding: 5px 7px;
+  color: #fff;
+  background: linear-gradient(#678bb4, #3c6797);
+  border-bottom: 1px solid #294f7a;
+}
+#info-panel-body { background: #eee; }
+.panel-title { font-family: Arial, sans-serif; font-weight: bold; text-shadow: 0 1px #294f7a; }
+.info-row label { color: #333; font-family: Arial, sans-serif; }
+.info-row input, .info-row select { border: 1px solid #999; border-radius: 0; background: #fff; }
+#sprite-panel, #sprite-list-panel, #sounds-editor, #costumes-editor {
+  background: #eee;
+  border-color: #888;
+  border-radius: 0;
+}
+.auth-window, #ext-picker-box, #sprite-picker-box, #object-picker-box { border-radius: 2px; border-color: #666; }
+.auth-titlebar, #ext-picker-title, #sprite-picker-title, #object-picker-title {
+  background: linear-gradient(#678bb4, #3c6797);
+  border-bottom-color: #294f7a;
+}
+::-webkit-scrollbar { width: 13px; height: 13px; }
+::-webkit-scrollbar-track { background: #eee; border: 1px solid #bbb; }
+::-webkit-scrollbar-thumb { background: linear-gradient(#fff, #c8c8c8); border: 1px solid #888; border-radius: 1px; }
+::-webkit-scrollbar-button { width: 13px; height: 13px; background: #ddd; border: 1px solid #999; }
+
+/* NetSite Pre-Alpha builder layout */
+body, #app, #editor-panel, #right-panel, #tab-scripts-content, #blockly-div {
+  background: #fff !important;
+}
+#app { gap: 8px; padding: 8px; }
+#editor-panel { min-width: 520px; border: 1px solid #c5c5c5; box-shadow: none; }
+#editor-tabs, #tab-costumes-content, #tab-sounds-content { display: none !important; }
+#right-panel { width: 48%; min-width: 440px; overflow: hidden; }
+#info-panel, #sprite-panel { display: none !important; }
+#stage-controls {
+  height: 43px;
+  flex-shrink: 0;
+  padding: 6px 8px;
+  background: #fff !important;
+  border: 1px solid #c5c5c5;
+}
+.preview-btn, .clear-preview-btn {
+  width: auto !important;
+  min-width: 66px;
+  height: 28px !important;
+  padding: 4px 12px !important;
+  font: bold 11px Arial, sans-serif;
+  color: #fff;
+  background: linear-gradient(#5f84b2, #315d92) !important;
+  border: 1px solid #224b7a !important;
+  border-radius: 3px !important;
+}
+.clear-preview-btn {
+  color: #333;
+  background: linear-gradient(#fff, #e2e2e2) !important;
+  border-color: #999 !important;
+}
+.preview-label { margin-left: 7px; color: #333; font-size: 12px; }
+.prealpha-note { margin-left: auto; color: #888; font-size: 10px; }
+.stage-mode-btns { display: none !important; }
+#stage-container {
+  flex: 1;
+  width: 100%;
+  min-height: 360px;
+  background: #fff !important;
+  border: 1px solid #aaa;
+  box-shadow: none;
+  line-height: normal;
+}
+#stage, #var-monitors { display: none !important; }
+#website-preview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 360px;
+  background: #fff;
+  border: 0;
+}
+#statusbar { background: #fff; border-top: 1px solid #ccc; }
+.blocklyMainBackground { fill: #fff !important; stroke: none !important; }
+.blocklyGridLine { stroke: #e8e8e8 !important; }
+.blocklyToolboxContents {
+  width: 124px !important;
+  height: 150px !important;
+  padding: 5px !important;
+  flex-wrap: nowrap !important;
+  background: #fff !important;
+  border-right: 1px solid #ccc !important;
+  border-bottom: 1px solid #ccc !important;
+  box-shadow: 1px 1px 3px rgba(0,0,0,.08);
+}
+.blocklyTreeRow {
+  width: 112px !important;
+  height: 31px !important;
+  color: #333 !important;
+  background: #fff !important;
+  border-top: 0 !important;
+  border-right: 0 !important;
+  border-bottom: 1px solid #e3e3e3 !important;
+  border-radius: 0 3px 3px 0 !important;
+}
+.blocklyTreeRow:hover { background: #f0f4f9 !important; }
+.blocklyTreeSelected { background: #dbe8f6 !important; border-radius: 0 3px 3px 0 !important; }
+.blocklyTreeLabel, .blocklyTreeSelected .blocklyTreeLabel { color: #222 !important; font-size: 12px !important; }
+.blocklyFlyoutBackground { fill: #f7f7f7 !important; fill-opacity: 1 !important; width: 270px !important; stroke: #ccc !important; }
+.blocklyFlyoutLabelText { fill: #777 !important; }
+.blocklyScrollbarBackground { fill: #fff !important; }
+.blocklyScrollbarHandle { fill: #bbb !important; }
+
+/* Supplied editor button skins. Website-preview buttons keep their own design. */
+#menubar button,
+#editor-panel button,
+#right-panel button:not(.win7-button),
+.auth-overlay button,
+#sprite-picker-overlay button,
+#object-picker-overlay button,
+#ext-picker-overlay button {
+  color: #111 !important;
+  background-color: #dedede !important;
+  background-image: url("assets/buttons/button-normal.png") !important;
+  background-repeat: no-repeat !important;
+  background-position: center !important;
+  background-size: 100% 100% !important;
+  border: 0 !important;
+  border-radius: 3px !important;
+  box-shadow: none !important;
+  text-shadow: 0 1px rgba(255,255,255,.8) !important;
+  transform: none !important;
+}
+#menubar button:hover,
+#editor-panel button:hover,
+#right-panel button:not(.win7-button):hover,
+.auth-overlay button:hover,
+#sprite-picker-overlay button:hover,
+#object-picker-overlay button:hover,
+#ext-picker-overlay button:hover,
+#menubar button:focus-visible,
+#editor-panel button:focus-visible,
+#right-panel button:not(.win7-button):focus-visible,
+.auth-overlay button:focus-visible,
+#sprite-picker-overlay button:focus-visible,
+#object-picker-overlay button:focus-visible,
+#ext-picker-overlay button:focus-visible {
+  background-color: #bde4fd !important;
+  background-image: url("assets/buttons/button-hover.png") !important;
+}
+#menubar button:active,
+#editor-panel button:active,
+#right-panel button:not(.win7-button):active,
+.auth-overlay button:active,
+#sprite-picker-overlay button:active,
+#object-picker-overlay button:active,
+#ext-picker-overlay button:active {
+  background-color: #74b5e4 !important;
+  background-image: url("assets/buttons/button-pressed.png") !important;
+}
+
+/* These are colour controls, not visual command buttons. */
+#editor-panel .component-palette button,
+#editor-panel .hex-swatch {
+  background-image: none !important;
+  border: 1px solid #666 !important;
+  border-radius: 0 !important;
+}
+.blocklyTrash > image { opacity: .65; }
+@media (max-width: 980px) {
+  #app { flex-direction: column; overflow-y: auto; }
+  #editor-panel { min-height: 520px; min-width: 0; }
+  #right-panel { width: 100%; min-width: 0; min-height: 500px; }
+}
+
+/* NetSite Alpha 1: keep the original editor shell; add components inside it. */
+@font-face { font-family: "Helvetica Neue"; src: url("assets/fonts/HelveticaNeue-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "Helvetica Neue"; src: url("assets/fonts/Helvetica Neu Bold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "Helvetica Neue Condensed"; src: url("assets/fonts/HelveticaNeue-CondensedBold.ttf") format("truetype"); font-weight: 700; }
+@font-face { font-family: "Helvetica Neue Light"; src: url("assets/fonts/HelveticaNeue-Light.ttf") format("truetype"); font-weight: 300; }
+@font-face { font-family: "Black Boys On Mopeds"; src: url("assets/fonts/BLACKBOYSONMOPEDS.ttf") format("truetype"); }
+@font-face { font-family: "Helvetica Neue Bold"; src: url("assets/fonts/Helvetica Neu Bold.ttf") format("truetype"); }
+@font-face { font-family: "Segoe UI"; src: url("assets/fonts/SegoeUI-Regular.ttf") format("truetype"); font-weight: 400; }
+@font-face { font-family: "Segoe UI Bold"; src: url("assets/fonts/SegoeUI-Bold.ttf") format("truetype"); }
+@font-face { font-family: "Segoe UI Light"; src: url("assets/fonts/SegoeUI-Light.ttf") format("truetype"); }
+
+html, body { height: 100%; overflow: hidden !important; }
+body { background: #afafaf !important; }
+#upload-background-btn {
+  flex: 0 0 auto;
+  height: 27px;
+  margin-right: 8px;
+  padding: 2px 9px;
+  white-space: nowrap;
+  font: 11px Arial, sans-serif;
+}
+#app {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 3px !important;
+  padding: 3px !important;
+  overflow: hidden !important;
+  background: #afafaf !important;
+}
+#editor-panel {
+  flex: 1 1 auto !important;
+  min-width: 300px !important;
+  min-height: 0 !important;
+  background: #7e7e7e !important;
+  border: 2px inset #888 !important;
+  box-shadow: none !important;
+}
+#editor-tabs { display: flex !important; }
+.tab-content { display: none !important; min-height: 0 !important; }
+.tab-content.active { display: flex !important; }
+#tab-scripts-content.active { flex: 1 1 auto !important; }
+#tab-costumes-content.active { display: block !important; overflow: auto !important; background: #eee !important; }
+#right-panel {
+  display: flex !important;
+  flex: 0 0 492px !important;
+  width: 492px !important;
+  min-width: 492px !important;
+  min-height: 0 !important;
+  gap: 3px !important;
+  overflow: hidden !important;
+}
+#info-panel { display: none !important; }
+#sprite-panel {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  min-height: 105px !important;
+  overflow: hidden !important;
+}
+#stage-controls {
+  flex: 0 0 43px !important;
+  height: 43px !important;
+  padding: 5px 6px !important;
+}
+#stage-container {
+  display: block !important;
+  position: relative !important;
+  flex: 0 0 360px !important;
+  width: 100% !important;
+  height: 360px !important;
+  min-height: 360px !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  background: #fff !important;
+}
+#stage, #website-preview, #var-monitors { display: none !important; }
+
+/* Restore the established dark Scratch-style block workspace. */
+.blocklyMainBackground { fill: #7e7e7e !important; stroke: none !important; }
+.blocklyGridLine { stroke: #3b3b3b !important; }
+.blocklyToolboxContents {
+  width: auto !important;
+  height: auto !important;
+  padding: 5px 0 !important;
+  background: #6d6d6d !important;
+  border: 0 !important;
+  border-right: 1px solid #4d4d4d !important;
+  box-shadow: none !important;
+}
+.blocklyTreeRow {
+  width: auto !important;
+  height: 30px !important;
+  color: #fff !important;
+  background: #686868 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+.blocklyTreeRow:hover { background: #777 !important; }
+.blocklyTreeSelected { background: #4f4f4f !important; border-radius: 0 !important; }
+.blocklyTreeLabel, .blocklyTreeSelected .blocklyTreeLabel { color: #fff !important; font-size: 12px !important; }
+.blocklyFlyoutBackground { fill: #585858 !important; fill-opacity: .96 !important; stroke: #444 !important; }
+.blocklyFlyoutLabelText { fill: #eee !important; }
+
+/* Page tabs live in the existing stage toolbar. */
+#page-tabs, #component-page-tabs {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  max-width: 185px;
+  margin-left: 7px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+}
+.page-tab, #add-page-btn, #component-page-tabs button {
+  min-width: 24px;
+  height: 25px;
+  padding: 2px 8px;
+  font: 11px Arial, sans-serif;
+}
+.page-tab.active, #component-page-tabs button.active { font-weight: bold; }
+#add-page-btn, #component-page-tabs .add-page { padding: 2px 7px; font-size: 15px; }
+.page-tab-wrap { display: inline-flex; flex: 0 0 auto; align-items: stretch; }
+#component-page-tabs .delete-page { width: 20px; min-width: 20px; padding: 0 !important; font-size: 13px; }
+
+/* Website canvas: only this panel scrolls, and its height expands as sprites move. */
+#component-page {
+  position: relative;
+  background-attachment: fixed;
+  width: 100%;
+  min-height: 100%;
+  overflow: visible;
+  background-color: #fff;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-size: cover;
+  color: #111;
+  font-family: Arial, sans-serif;
+}
+.component-sprite, .website-sprite {
+  position: absolute;
+  min-width: 24px;
+  min-height: 18px;
+  cursor: move;
+  user-select: none;
+  box-sizing: border-box;
+}
+.component-sprite.selected, .website-sprite.selected { outline: 0 !important; }
+.component-sprite.is-hidden, .website-sprite.hidden { opacity: .3; }
+#component-page.test-mode .component-sprite { cursor: default; }
+#component-page.test-mode .component-sprite.is-hidden { display: none; }
+.website-sprite.testing { cursor: default; }
+.website-sprite.testing.hidden { display: none; }
+.component-sprite h1, .component-sprite h2, .component-sprite p,
+.website-sprite h1, .website-sprite h2, .website-sprite p { margin: 0; font: inherit; color: inherit; }
+.component-sprite small, .website-sprite small { display: block; font: inherit; color: inherit; }
+.component-sprite button,
+.component-sprite input,
+.component-sprite select,
+.website-sprite button,
+.website-sprite input,
+.website-sprite select { width: 100%; height: 100%; box-sizing: border-box; font: inherit; color: inherit; }
+.website-sprite .win7-button {
+  min-width: 0;
+  padding: 0 12px;
+  color: #111;
+  border: 1px solid #707070;
+  border-radius: 3px;
+  background: var(--button-fill, linear-gradient(#fefefe, #d7d7d7));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.8), 0 1px 1px rgba(0,0,0,.15);
+  text-shadow: 0 1px #fff;
+}
+.website-sprite .win7-button:hover {
+  border-color: #3c7fb1;
+  background: var(--button-fill, linear-gradient(#fff, #a7d9f5));
+  filter: brightness(1.08) saturate(1.08);
+  box-shadow: inset 0 0 0 1px #fff, 0 0 3px rgba(60,127,177,.7);
+}
+.website-sprite .win7-button:active {
+  border-color: #2c628b;
+  background: var(--button-fill, linear-gradient(#c4e5f6, #98d1ef));
+  filter: brightness(.9) saturate(1.12);
+  box-shadow: inset 0 1px 3px rgba(0,0,0,.25);
+}
+.component-sprite img, .website-sprite img { display: block; width: 100%; height: 100%; object-fit: contain; pointer-events: none; }
+.component-sprite iframe, .website-sprite iframe { display: block; width: 100%; height: 100%; border: 1px solid #777; box-sizing: border-box; background: #fff; }
+.iframe-drag-shield, .iframe-shield { position: absolute; inset: 0; z-index: 2; }
+#component-page.test-mode .iframe-drag-shield { display: none; }
+.website-sprite.testing .iframe-shield { display: none; }
+.website-sprite hr { width: 100%; margin: 0; position: absolute; top: 50%; border: 0; border-top: 1px solid currentColor; }
+.website-sprite .component-progress { overflow: hidden; border: 1px solid #777; background: #eee; box-sizing: border-box; }
+.website-sprite .component-progress > div { height: 100%; background: linear-gradient(#80c45b, #45962b); }
+.sprite-tag { position: absolute; left: 0; top: -15px; z-index: 4; padding: 1px 3px; color: #fff; background: #315d92; font: bold 9px Arial, sans-serif; pointer-events: none; }
+.website-sprite.testing .sprite-tag { display: none; }
+.sprite-speech {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 8px);
+  z-index: 20;
+  min-width: 70px;
+  max-width: 240px;
+  padding: 7px 10px;
+  color: #111;
+  background: #fff;
+  border: 2px solid #777;
+  border-radius: 12px;
+  font: 13px Arial, sans-serif;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  box-shadow: 0 2px 5px rgba(0,0,0,.25);
+  pointer-events: none;
+}
+.sprite-speech::after { content: ""; position: absolute; left: 18px; top: 100%; border: 7px solid transparent; border-top-color: #777; }
+.component-divider { width: 100%; height: 1px; margin-top: 50%; background: currentColor; }
+.component-box { width: 100%; height: 100%; border: 1px solid currentColor; box-sizing: border-box; }
+.component-space { width: 100%; height: 100%; border: 1px dashed #aaa; box-sizing: border-box; }
+#component-page.test-mode .component-space { border-color: transparent; }
+.component-progress { width: 100%; height: 100%; }
+
+/* Sprite list and selected-sprite Styler. */
+#sprite-list { overflow: auto !important; }
+.component-list-item, .component-sprite-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+  min-height: 30px;
+  margin: 2px;
+  padding: 4px 6px;
+  background: #fff;
+  border: 1px solid #aaa;
+  cursor: pointer;
+  font: 11px Arial, sans-serif;
+}
+.component-list-item.selected, .component-sprite-item.active { background: #dceafa; border-color: #5c8fbd; }
+.component-sprite-item { width: calc(100% - 4px); text-align: left; }
+.component-sprite-summary { flex: 1 1 auto; min-width: 0; }
+.component-sprite-item .delete-sprite { flex: 0 0 24px; width: 24px; min-width: 24px; height: 24px; padding: 0 !important; font-size: 14px; }
+.component-sprite-item strong, .component-sprite-item small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.component-sprite-item small { color: #666; font-size: 9px; }
+.component-empty { margin: 10px; color: #666; font: 11px Arial, sans-serif; }
+.component-list-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.component-list-type { color: #777; font-size: 9px; text-transform: uppercase; }
+#component-styler { padding: 9px; font: 12px Arial, sans-serif; color: #222; }
+#component-styler h3 { margin: 0 0 8px; font-size: 14px; }
+.styler-grid { display: grid; grid-template-columns: 72px minmax(100px, 1fr); gap: 6px 8px; align-items: center; }
+.styler-grid input, .styler-grid select, .styler-grid textarea { width: 100%; box-sizing: border-box; }
+.styler-grid textarea { min-height: 48px; resize: vertical; }
+.styler-section { margin-top: 10px; padding-top: 8px; border-top: 1px solid #bbb; }
+.styler-row { display: grid; grid-template-columns: 80px minmax(110px, 1fr); gap: 7px; align-items: center; margin: 5px 0; }
+.styler-row input, .styler-row select { width: 100%; min-width: 0; box-sizing: border-box; }
+.styler-check { display: block; margin: 8px 0; }
+.component-palette { display: grid; grid-template-columns: repeat(12, 18px); gap: 3px; margin: 3px 0 8px 87px; }
+.component-palette button { width: 18px; min-width: 18px; height: 18px; padding: 0; border: 1px solid #666; }
+.styler-actions { display: flex; gap: 6px; margin-top: 10px; }
+.hex-palette { display: grid; grid-template-columns: repeat(10, 18px); gap: 3px; margin-top: 6px; }
+.hex-swatch { width: 18px; height: 18px; padding: 0; border: 1px solid #666; cursor: pointer; }
+
+/* 2008 YouTube-style sprite chooser, using the existing safe modal layer. */
+#sprite-picker-overlay { z-index: 12000; background: rgba(0, 0, 0, .48); }
+#sprite-picker-box {
+  width: 520px;
+  max-width: calc(100vw - 30px);
+  max-height: calc(100vh - 30px);
+  overflow: hidden;
+  color: #111;
+  background: #fff;
+  border: 1px solid #555;
+  border-radius: 2px;
+  box-shadow: 0 3px 14px rgba(0,0,0,.55);
+}
+#sprite-picker-title {
+  min-height: 30px;
+  padding: 7px 10px;
+  color: #fff;
+  background: linear-gradient(#6d91b8, #416b98);
+  border-bottom: 1px solid #294f7a;
+  font: bold 14px Arial, sans-serif;
+  text-shadow: 0 1px #294f7a;
+}
+#sprite-picker-content { padding: 12px; overflow: auto; background: #fff; }
+#sprite-picker-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+#sprite-picker-grid button, .component-choice { min-height: 42px; padding: 5px 8px; font: 12px Arial, sans-serif; }
+#sprite-picker-footer { padding: 8px 10px; background: #eee; border-top: 1px solid #bbb; text-align: right; }
+
+@media (max-width: 980px) {
+  #app { flex-direction: row !important; overflow: hidden !important; }
+  #editor-panel { min-width: 280px !important; min-height: 0 !important; }
+  #right-panel { flex-basis: 460px !important; width: 460px !important; min-width: 440px !important; min-height: 0 !important; }
+}
+
+/* Pre-Alpha coding-workspace surface. Block shapes and renderer stay unchanged. */
+.blocklyMainBackground { fill: #fff !important; stroke: none !important; }
+.blocklyGridLine { stroke: #e8e8e8 !important; }
+.blocklyToolboxContents {
+  width: 124px !important;
+  height: auto !important;
+  padding: 5px !important;
+  background: #fff !important;
+  border-right: 1px solid #ccc !important;
+  box-shadow: 1px 1px 3px rgba(0,0,0,.08) !important;
+}
+.blocklyTreeRow {
+  width: 112px !important;
+  height: 31px !important;
+  color: #333 !important;
+  background: #fff !important;
+  border: 0 !important;
+  border-bottom: 1px solid #e3e3e3 !important;
+  border-radius: 0 3px 3px 0 !important;
+}
+.blocklyTreeRow:hover { background: #f0f4f9 !important; }
+.blocklyTreeSelected { background: #dbe8f6 !important; }
+.blocklyTreeLabel, .blocklyTreeSelected .blocklyTreeLabel { color: #222 !important; font-size: 12px !important; }
+.blocklyFlyoutBackground { fill: #f7f7f7 !important; fill-opacity: 1 !important; stroke: #ccc !important; }
+.blocklyFlyoutLabelText { fill: #777 !important; }
+.blocklyScrollbarBackground { fill: #fff !important; }
+.blocklyScrollbarHandle { fill: #bbb !important; }
+
+/* Keep the menubar dropdowns above the fixed editor panes. */
+#menubar { z-index: 20000 !important; overflow: visible !important; }
+#menubar .menu-dropdown { z-index: 20001 !important; }

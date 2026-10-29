@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FNE — Profile</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+@font-face {
+  font-family: 'Black Boys on Mopeds';
+  src: local('Black Boys on Mopeds'), local('BlackBoysOnMopeds');
+}
+body {
+  font-family: Verdana, Arial, Helvetica, sans-serif;
+  font-size: 12px;
+  background: #e6e8eb;
+  color: #333;
+  min-height: 100vh;
+}
+
+/* ─── TOP BAR ─── */
+#topbar {
+  height: 50px;
+  background: linear-gradient(180deg, #4a90d9 35%, #2d6eb5 70%, #1a5294 100%);
+  border-bottom: 2px solid #0e3d6b;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+#topbar .logo {
+  font-family: 'Black Boys on Mopeds', 'Comic Sans MS', Arial, sans-serif;
+  font-size: 22px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.4);
+  margin-right: 30px;
+  text-decoration: none;
+}
+#topbar .nav-links { display: flex; gap: 4px; align-items: center; }
+#topbar .nav-link {
+  color: #fff;
+  font-size: 13px;
+  font-weight: bold;
+  padding: 6px 14px;
+  border-radius: 4px;
+  text-decoration: none;
+  text-shadow: 0 1px 1px rgba(0,0,0,0.3);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+#topbar .nav-link:hover { background: rgba(255,255,255,0.2); }
+#topbar .nav-link.active { background: rgba(255,255,255,0.25); }
+#topbar .spacer { flex: 1; }
+
+/* ─── PROFILE CARD ─── */
+.content-wrap {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 30px 20px;
+}
+.profile-card {
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.12);
+}
+.profile-banner {
+  height: 90px;
+  background: linear-gradient(135deg, #4a90d9, #6cc76c);
+}
+.profile-body {
+  display: flex;
+  gap: 20px;
+  padding: 20px 24px 24px;
+  align-items: flex-start;
+}
+.profile-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  border: 3px solid #fff;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+  image-rendering: pixelated;
+  background: #eee;
+  margin-top: -50px;
+}
+.profile-info { flex: 1; }
+.profile-nickname {
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 2px;
+}
+.profile-nickname2 {
+  font-size: 12px;
+  color: #888;
+  font-style: italic;
+  margin-bottom: 10px;
+}
+.profile-stat {
+  font-size: 12px;
+  color: #555;
+  margin-bottom: 4px;
+}
+.profile-stat strong { color: #333; }
+
+/* ─── SECTION ─── */
+.section-card {
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  border-radius: 8px;
+  margin-top: 16px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+.section-title {
+  font-size: 14px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+}
+.stat-grid {
+  display: flex;
+  gap: 30px;
+}
+.stat-box {
+  text-align: center;
+}
+.stat-number {
+  font-size: 26px;
+  font-weight: bold;
+  color: #4a90d9;
+}
+.stat-label {
+  font-size: 11px;
+  color: #999;
+  margin-top: 2px;
+}
+
+/* ─── FOOTER ─── */
+#footer {
+  background: #333;
+  color: #999;
+  text-align: center;
+  padding: 20px;
+  font-size: 11px;
+  margin-top: 60px;
+}
+#footer a { color: #8ab4f8; text-decoration: none; }
+#footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════ TOP BAR ═══════════════ -->
+<div id="topbar">
+  <a class="logo" href="index.html"><img src="assets/funnynetworkengine.png" alt="FunnyNetworkEngine" style="height: 28px; vertical-align: middle;"></a>
+  <div class="nav-links">
+    <a class="nav-link" href="index.html">Create</a>
+    <a class="nav-link" href="community.html">Community</a>
+    <a class="nav-link" href="mystuff.html">My Stuff</a>
+  </div>
+  <div class="spacer"></div>
+  <div id="auth-buttons" style="display:flex; gap:4px;">
+    <a class="nav-link" href="index.html" style="background:linear-gradient(180deg,#5cb85c 0%,#3d8b3d 100%); border-radius:5px; padding:5px 12px;">Join</a>
+    <a class="nav-link" href="index.html" style="padding:5px 12px;">Sign In</a>
+  </div>
+  <div id="user-area" style="display:none; position:relative;">
+    <span style="color:#fff; font-weight:bold; font-size:12px; display:flex; align-items:center; gap:6px; cursor:pointer; padding:2px 8px;" id="user-badge-p">
+      <img src="assets/user.png" alt="" style="width:22px; height:22px; image-rendering:pixelated; border-radius:3px;">
+      <span id="user-nick-p"></span>
+    </span>
+  </div>
+</div>
+
+<!-- ═══════════════ PROFILE ═══════════════ -->
+<div class="content-wrap">
+  <div class="profile-card">
+    <div class="profile-banner"></div>
+    <div class="profile-body">
+      <img class="profile-avatar" id="avatar" src="assets/user.png" alt="avatar">
+      <div class="profile-info">
+        <div class="profile-nickname" id="nickname">...</div>
+        <div class="profile-nickname2" id="nickname2"></div>
+        <div class="profile-stat"><strong>Joined:</strong> <span id="join-date">—</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-card">
+    <div class="section-title">Statistics</div>
+    <div class="stat-grid">
+      <div class="stat-box">
+        <div class="stat-number" id="stat-projects">0</div>
+        <div class="stat-label">Projects</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════ FOOTER ═══════════════ -->
+<div id="footer">
+  FunnyNetworkEngine &copy; 2026 &mdash; <a href="index.html">Back to Editor</a>
+</div>
+
+<script>
+function init() {
+  var saved = localStorage.getItem("fne_current_user");
+  if (!saved) {
+    document.getElementById("nickname").textContent = "Not logged in";
+    return;
+  }
+  var current;
+  try { current = JSON.parse(saved); } catch(e) { return; }
+
+  // Show logged-in state in topbar
+  document.getElementById("auth-buttons").style.display = "none";
+  document.getElementById("user-area").style.display = "flex";
+  document.getElementById("user-nick-p").textContent = current.nickname;
+
+  var users = JSON.parse(localStorage.getItem("fne_users") || "{}");
+  var user = users[current.nickname.toLowerCase()];
+  if (!user) {
+    document.getElementById("nickname").textContent = current.nickname;
+    return;
+  }
+
+  document.getElementById("nickname").textContent = user.nickname;
+  if (user.nickname2) {
+    document.getElementById("nickname2").textContent = "aka " + user.nickname2;
+  }
+  if (user.created) {
+    document.getElementById("join-date").textContent = new Date(user.created).toLocaleDateString();
+  }
+  var projectCount = user.projects ? user.projects.length : 0;
+  document.getElementById("stat-projects").textContent = projectCount;
+  document.title = "FNE — " + user.nickname + "'s Profile";
+}
+
+init();
+</script>
+</body>
+</html>

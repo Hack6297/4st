@@ -1,0 +1,52 @@
+/* Nine-slice button skin: the center stretches while the six-pixel caps stay fixed. */
+#menubar button:not(.menu-history-icon),
+#editor-panel button,
+#right-panel button:not(.win7-button),
+.auth-overlay button,
+#sprite-picker-overlay button,
+#object-picker-overlay button,
+#ext-picker-overlay button,
+.asset-chooser-overlay button {
+  box-sizing: border-box !important;
+  border: 4px solid transparent !important;
+  border-image: url("assets/buttons/button-normal.png") 6 fill / 4px / 0 stretch !important;
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+}
+#menubar button:not(.menu-history-icon):hover,
+#editor-panel button:hover,
+#right-panel button:not(.win7-button):hover,
+.auth-overlay button:hover,
+#sprite-picker-overlay button:hover,
+#object-picker-overlay button:hover,
+#ext-picker-overlay button:hover,
+.asset-chooser-overlay button:hover,
+#menubar button:not(.menu-history-icon):focus-visible,
+#editor-panel button:focus-visible,
+#right-panel button:not(.win7-button):focus-visible {
+  border-image-source: url("assets/buttons/button-hover.png") !important;
+}
+#menubar button:not(.menu-history-icon):active,
+#editor-panel button:active,
+#right-panel button:not(.win7-button):active,
+.auth-overlay button:active,
+#sprite-picker-overlay button:active,
+#object-picker-overlay button:active,
+#ext-picker-overlay button:active,
+.asset-chooser-overlay button:active {
+  border-image-source: url("assets/buttons/button-pressed.png") !important;
+}
+/* File icons and colour swatches are not buttons with decorative frames. */
+#editor-panel .asset-nav-orbs button,
+#editor-panel .component-palette button,
+#editor-panel .hex-swatch,
+#editor-panel .asset-tile,
+#editor-panel .asset-breadcrumb button,
+#menubar button.menu-history-icon {
+  border-image: none !important;
+  border-width: 0 !important;
+  background: transparent !important;
+  background-image: none !important;
+}
+
