@@ -235,6 +235,10 @@ button {
   min-width: calc((var(--tile-size) * 4) + (var(--tile-gap) * 3));
 }
 
+.tile-group--built-in-home {
+  min-width: calc((var(--tile-size) * 5) + (var(--tile-gap) * 4));
+}
+
 .tile-group--news {
   min-width: calc((var(--tile-size) * 4) + (var(--tile-gap) * 3));
 }
@@ -260,6 +264,21 @@ button {
   grid-template-columns: repeat(2, var(--tile-size));
   grid-template-rows: repeat(4, var(--tile-size));
   min-height: calc((var(--tile-size) * 4) + (var(--tile-gap) * 3));
+}
+
+.tile-group__grid--built-in-home {
+  grid-template-columns: repeat(5, var(--tile-size));
+  grid-template-rows: var(--tile-size);
+  grid-auto-flow: column;
+  min-height: var(--tile-size);
+}
+
+.built-in-stage__grid {
+  grid-template-columns: repeat(5, var(--tile-size));
+  grid-template-rows: var(--tile-size);
+  grid-auto-flow: column;
+  overflow-x: auto;
+  overflow-y: hidden;
 }
 
 .tile-group--apps .tile-group__grid--category {
@@ -899,3 +918,4 @@ button {
     text-align: left;
   }
 }
+
